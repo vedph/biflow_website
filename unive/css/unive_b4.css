@@ -1,0 +1,14 @@
+/* STYLE  */
+
+@import url("../font/opensans.new.css");
+@import url("../font/roboto.css");
+
+@import url("01_bootstrap_elements/03_typography.css?v=2.61");
+@import url("01_bootstrap_elements/04_card.css?v=2.61");
+
+@import url("00_pages/header_ateneo.css?v=2.61");
+
+@import url("02_content_elements/01_content.css?v=2.61");
+
+@import url("00_pages/menu_left.css?v=2.61");
+@import url("00_pages/footer.css?v=2.61");

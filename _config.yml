@@ -1,0 +1,8 @@
+title: BiFlow Catalogue
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "http://foobar.foo"
+description: something..
+email: foo@bar.it
+
+# Build settings
+markdown: kramdown

@@ -1,0 +1,74 @@
+<footer class="bottom">
+	<div class="grigio_lg">
+		<div class="container">
+			<div class="row">
+            	<div class="col">
+                    <h2>Contattaci</h2>
+                    <p class="bodytext">
+                    	<b><span class="glyphicon glyphicon-envelope grey"></span>&nbsp;<a href="mailto:{{site.email}}">{{site.email}}</a></b>
+                    </p>
+					<div class="w-100 divider-invisibile" ></div>
+              	</div>
+			</div>
+		</div>
+	</div>
+    <div class="grigio_scuro_unive">
+    	<div class="container">
+   			<div class="row">
+    			<div class="col">
+                    <address>
+                        <a href="//www.unive.it/"><b>Università Ca' Foscari</b></a><br /> 
+                        Dorsoduro 3246, 30123 Venezia<br /> 
+                        PEC <a href="mailto:protocollo@pec.unive.it">protocollo@pec.unive.it</a><br /> 
+                        P.IVA 00816350276 - CF 80007720271<br /> 
+                        <a href="/pag/17993/">Privacy</a> / <a href="/pag/17992/">Note legali</a><br>
+                    </address>
+                    <a href="/pag/12314/">
+                        <img src="/unive/img/hr_excellence_i_r.svg" alt="HR" title="" class="img-responsive hr-logo" />
+                    </a>
+                    </div>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+    <div class="container">
+    	<div class="row">
+    		<div class="col">
+    			<div id="top">
+    				<span class="glyphicon glyphicon-chevron-up" aria-hidden="true">
+    				</span>
+    			</div>
+
+            </div>
+        </div>
+	</div>
+</footer>
+
+
+
+<div style="color: rgb(255, 255, 255); background-color: rgb(0, 0, 0); display: none;" class="box-bottom btn-style" id="cookie-alert">
+    <div class="cookie-alert-container">
+    	<span id="cookie-text">Questo sito utilizza cookie anche di terze parti. Per maggiori informazioni o per negare il consenso a tutti o alcuni dei cookie utilizzati dal sito, è possibile prendere visione dell'informativa. Chiudendo questo banner o proseguendo nella navigazione si accetta l'uso dei cookie.</span>
+		<a class="btn btn-danger btn-xs" id="cookie-accept" href="" onclick="CookieOnClick('cookieUnive', 1, 30);return false;">Chiudi</a> 
+        <a class="btn btn-danger btn-xs" id="cookie-more-info" target="_top" href="/pag/17993">Informativa</a>
+    </div>
+</div>
+
+<script>
+  $(window).bind("load", function(){MyCookieControl('cookieUnive');});
+  
+  $(window).click(function() {
+    CookieOnClick('cookieUnive', 1, 30);
+  });
+  
+  $(window).scroll(function() {
+    CookieOnClick('cookieUnive', 1, 30);
+  });
+</script>
+    
+
+
+
+<!-- Template by Stefano Bonetta  -->
+
+<script src="/unive/js/js_unive.js" type="text/javascript"></script>

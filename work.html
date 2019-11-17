@@ -1,0 +1,85 @@
+---
+layout: page
+---
+
+<div class="grigio_ar">
+  <div class="container">
+    <h1 id="workMainTitle">Loading</h1>
+  </div>
+</div>
+
+<div class="container">  
+  <div class="row">
+    <div class="col">    
+
+      <div class="table-responsive"> 
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <th scope="row">Codice</th>
+              <td id="workCode"></td>
+            </tr>
+            <tr>
+              <th scope="row">Titolo</th>
+              <td id="workTitle"></td>
+            </tr>
+            <tr>
+              <th scope="row">Autore</th>
+              <td id="workAuthor"></td>
+            </tr>
+            <tr>
+              <th scope="row">Genere</th>
+              <td id="workGenres"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+       
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Contenuto
+           </div>
+           <div class="card-body" id="workContent"></div>
+       </div>
+       
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Altre traduzioni
+           </div>
+           <div class="card-body" id="workOtherTranslations"></div>
+       </div>
+       
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Altre attribuzioni
+           </div>
+           <div class="card-body" id="workAttributions"></div>
+       </div>
+       
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Espressioni
+           </div>
+           <ul class="list-group list-group-flush" id="workExpressions">
+           </ul>
+       </div>
+       
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Lavori collegati
+           </div>
+           <div class="card-body" id="workRelatedWorks"></div>
+       </div>
+
+    </div> 
+  </div> 
+</div>
+
+<script type="text/javascript">
+
+const searchParams = new URLSearchParams(window.location.search);
+const id = searchParams.get("id");
+
+Biflow.showFullWork(id);
+
+</script>

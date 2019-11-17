@@ -1,0 +1,74 @@
+---
+layout: page
+---
+
+<div class="grigio_ar">
+  <div class="container">
+    <h1 id="personMainTitle">Loading</h1>
+  </div>
+</div>
+
+
+<div class="container">  
+  <div class="row">
+      <div class="col">  
+        
+         <div class="table-responsive"> 
+          <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <th scope="row">Nome</th>
+                <td id="personName"></td>
+              </tr>
+              <tr>
+                <th scope="row">Nome (alt.)</th>
+                <td id="personNicknames"></td>
+              </tr>
+              <tr>
+                <th scope="row">Data di Nascita</th>
+                <td id="personBirthDate"></td>
+              </tr>
+              <tr>
+                <th scope="row">Data di Morte</th>
+                <td id="personDeathDate"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Autore
+           </div>
+           <ul class="list-group list-group-flush" id="personWorks">
+           </ul>
+       </div>
+       
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Traduttore
+           </div>
+           <ul class="list-group list-group-flush" id="personTranslations">
+           </ul>
+       </div>
+       
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Copista
+           </div>
+           <ul class="list-group list-group-flush" id="personCodices">
+           </ul>
+       </div>
+       
+    </div> 
+  </div> 
+</div>
+
+<script type="text/javascript">
+
+const searchParams = new URLSearchParams(window.location.search);
+const id = searchParams.get("id");
+
+Biflow.showFullPerson(id);
+
+</script>

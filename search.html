@@ -1,0 +1,51 @@
+---
+layout: page
+---
+<ul id="list"></ul>
+
+<script>
+const search = new URLSearchParams(location.search).get("search");
+const ul = document.getElementById("list");
+
+while (ul.firstChild) ul.firstChild.remove();
+
+searchForWorks(ul, search);
+searchForPeople(ul, search);
+
+async function searchForWorks(ul, search) {
+  const resp = await fetch("https://mizar.unive.it/catalogo_biflow/api/public/api/works");
+  const json = await resp.json();
+  const works = json['hydra:member'];
+
+  works.forEach(work => {
+    if (search && work.code.toLowerCase().indexOf(search) != -1) {
+      const li = document.createElement("li");
+      ul.appendChild(li);
+
+      const anchor = document.createElement('a');
+      anchor.href = "/work?id=" + work.id;
+      anchor.appendChild(document.createTextNode("Work: " + work.code));
+      li.appendChild(anchor);
+    }
+  });
+}
+
+async function searchForPeople(ul, search) {
+  const resp = await fetch("https://mizar.unive.it/catalogo_biflow/api/public/api/people");
+  const json = await resp.json();
+  const people = json['hydra:member'];
+
+  people.forEach(person => {
+    if (search && person.name.toLowerCase().indexOf(search) != -1) {
+      const li = document.createElement("li");
+      ul.appendChild(li);
+
+      const anchor = document.createElement('a');
+      anchor.href = "/person?id=" + person.id;
+      anchor.appendChild(document.createTextNode("Person: " + person.name));
+      li.appendChild(anchor);
+    }
+  });
+}
+
+</script>

@@ -1,0 +1,87 @@
+/*******************************************************/
+/*						 navbar	 			      	   */
+/*******************************************************/
+.unive_header {
+	background-color:#fff;
+	border-bottom: 1px solid #333; 
+}
+.unive_header > .logo-sezione .logo-piccolo > span.site-name,
+.unive_header > .logo-sezione  span.site-name a,
+.unive_header > .logo-sezione  span.section-name,
+.unive_header > .logo-sezione  span.section-name a{
+	color:#333;
+}
+
+.unive_header > .logo-sezione  span.section-name{
+	height:50px;
+	font-size:20px;
+	line-height:20px;
+  	padding:15px 0px 0px 15px;
+	margin:10px 0px 10px 0px;
+	border-left:1px solid #333;
+}
+div.sub-header {
+	color:#333;
+	background-color:#eee; 
+	margin-bottom:15px;
+}
+.sub-header > div.container > a {
+	color:#333;
+}
+.unive_header > .logo-sezione  a.logo-header.sezione > img.img-responsive{
+	border-left: 1px solid #333;
+}
+@media only screen and (max-width : 992px){
+	.navbar-default{
+		border-bottom: 1px solid #333;
+	}
+	.unive_header {
+		border-bottom:none; 
+	}
+}
+/*******************************************************/
+/*							full		 		       */
+/*******************************************************/
+footer.bottom > div.grigio_lg{
+	/*border-top:1px solid #bbb;*/
+	margin:4rem 0 0 0;
+}
+/*******************************************************/
+/*                     intestazione       			   */
+/*******************************************************/ 
+div.grigio_ar{
+	background-color:#2281c1;
+	margin:0 0 4rem 0;
+	padding:20px 0px 20px 0px;
+}
+div.grigio_ar h1{
+	font-family: 'Open Sans';
+	font-style: normal;
+	font-weight: 700;
+	color:#FFF;
+	font-size:54px;
+	background:none;
+	border:none;
+	padding:10px 6px 10px 6px;
+	margin:0px 0px 0px 0px;
+}
+div.grigio_ar figure {
+    margin: 0;
+}
+div.grigio_ar .divider-invisibile-doppio{
+	margin-bottom: 4rem;
+}
+/*******************************************************/
+/*						numeri		 		      	   */
+/*******************************************************/
+.card.numeri{
+	text-align:center;
+	/*background-color:#f8fbfe;*/
+	border-color:#3096da;
+}
+.card.numeri h3.contatore{
+	text-align:center;
+	font-size: 2.0rem;
+	color:#2281c1;
+	font-weight: 700;
+}

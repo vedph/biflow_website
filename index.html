@@ -1,0 +1,92 @@
+---
+layout: page
+description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse vel ultricies massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum at commodo ligula, non venenatis est. Nunc ultricies mattis felis, ut accumsan lectus porttitor sed. Donec suscipit ipsum tincidunt cursus tempor. Curabitur pulvinar turpis finibus ante pharetra, non congue enim mollis. Maecenas iaculis justo ex, id fermentum quam finibus sed. Nam quis nisl in justo efficitur porta. Vivamus odio velit, eleifend nec risus et, tincidunt ornare ex. Mauris ac sodales ligula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed finibus lorem mauris, ac porttitor diam sollicitudin ac. Nunc nunc sem, porttitor sit amet blandit efficitur, vestibulum tincidunt libero. Nunc ipsum diam, tristique quis suscipit id, fringilla in nulla. Fusce at ipsum vel velit pretium euismod cursus id sapien. Mauris gravida, elit congue interdum tincidunt, augue est finibus libero, quis sollicitudin massa tortor id eros.
+---
+<div class="grigio_ar">
+  <div class="container">
+    <div class="row ">
+       <div class="col-sm-9 col-md-4">
+         <figure class="figure">
+           <img src="img/home_800x800.jpg" alt="" title="" class="img-fluid rounded-circle" />
+         </figure>
+       </div>
+       <div class="col-sm-12 col-md-8">
+         <div class="w-100 divider-invisibile-doppio"></div>
+         <h1>
+           Catalogo Biflow<br>
+           <small>La traduzione nel Medioevo</small>
+         </h1>
+       </div>
+    </div>
+  </div>
+</div>
+  
+<div class="container">  
+  <div class="row">
+    <div class="col">    
+      <h2>Breve descrizione</h2>
+      <p>{{ page.description }}</p>
+                  
+      <h2>Ricerca</h2>
+      <div class="row">
+        <div class="col-12 col-md-12">
+          <div class="card">
+            <div class="card-body">
+              <form action="/search" method="GET">
+      
+                <div class="form-row">
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" name="search" placeholder="...">
+                  </div>
+                  <div class="col-md-2">
+                    <button class="btn btn-primary btn-block" type="submit">ricerca</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+                    
+      <div class="w-100 divider-invisibile-doppio"></div>
+      
+      <div class="card-deck">
+        <div class="card numeri">
+          <div class="card-body">
+            <h3 class="contatore" id="counter-works">
+              <div class="lds-circle"><div></div></div>
+            </h3>
+            <h3><a href="/works">Schede</a></h3>
+          </div>
+        </div>
+        <div class="card numeri">
+          <div class="card-body">
+            <h3 class="contatore" id="counter-manuscripts">
+              <div class="lds-circle"><div></div></div>
+            </h3>
+            <h3>Manoscritti</h3>
+          </div>
+        </div>
+        <div class="card numeri">
+          <div class="card-body">
+            <h3 class="contatore" id="counter-translators">
+              <div class="lds-circle"><div></div></div>
+            </h3>
+            <h3><a href="/people">Traduttori</a></h3>
+          </div>
+        </div>
+        <div class="card numeri">
+          <div class="card-body">
+            <h3 class="contatore" id="counter-copysts">
+              <div class="lds-circle"><div></div></div>
+            </h3>
+            <h3><a href="/people">Copisti</a></h3>
+          </div>
+        </div>
+      </div>
+
+      <script type="text/javascript">Biflow.updateCounters();</script>
+
+    </div> 
+  </div> 
+</div>

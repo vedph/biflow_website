@@ -1,0 +1,44 @@
+/*******************************************************/
+/*					card		 		      	   */
+/*******************************************************/
+.card{
+	margin-top:1.2rem;
+	margin-bottom:1.5rem;
+}
+.card-header{
+	font-family: 'Open Sans';
+	font-style: normal;
+	font-weight: 400;
+	/*font-size:18px;*/
+}
+.card-header > h2,
+.card-header > h3,
+.card-header > h4,
+.card-header > h5{
+	font-family: 'Open Sans';
+	font-style: normal;
+	font-weight: 400;
+	font-size:1.2rem;;
+	margin-top:0rem;
+	margin-bottom:0rem;
+}
+.card-header h5 small{
+	line-height: 2;
+	color:#666;
+}
+.card-body > p.bodytext{
+	padding-top:0px;
+	padding-bottom:10px;
+}
+.card-body > h2,
+.card-body > h3,
+.card-body > h4,
+.card-body > h5{
+	margin-top:0rem;
+}
+div.tab-pane div.card div.card-body div.table-responsive table.table.table-sm{
+	margin-top:1rem;
+}
+.card-body div.table-responsive table.table.table-sm {
+	color:#888;
+}
