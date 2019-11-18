@@ -199,23 +199,76 @@ const Biflow = {
     this.showWorkAuthor(data);
     this.showWorkAttributions(data);
     this.showWorkGenres(data);
-    this.showExpressions(data.expressions, "workTitle", "workExpressions");
+    this.showExpressions(data.expressions, "workExpressions", expressions => {
+      const topLevelExpressions = [];
+      expressions.forEach(expression => {
+        if (!expression.derivedFrom) {
+          topLevelExpressions.push(expression);
+        }
+      });
+
+      document.getElementById("workTitle").textContent = topLevelExpressions.map(e => e.title).join(", ");
+
+      // Diagram.
+      topLevelExpressions.forEach(e => {
+        const createDiagram = e => {
+          const node = {
+            text: {
+              code: {
+                val: e.code,
+                href: "/expression?id=" + e.id,
+              },
+              title: e.title,
+            },
+            children: [],
+            stackChildren: true,
+          };
+
+          e.derivedExpressions.forEach(de => {
+            const id = parseInt(de.substr(de.lastIndexOf("/") +1), 10);
+            de = expressions.find(ee => ee.id === id);
+            if (de) {
+              node.children.push(createDiagram(de));
+            }
+          });
+
+          return node;
+        };
+
+        const div = document.createElement("div");
+        document.getElementById("workDiagram").appendChild(div);
+        div.id = "expression_" + e.id;
+
+        const nodeStructure = createDiagram(e);
+        const charts = new Treant({
+          chart: {
+            container: "#expression_" + e.id,
+            levelSeparation:    25,
+            siblingSeparation:  70,
+            subTeeSeparation:   70,
+            padding: 35,
+            node: { HTMLclass: "diagram" },
+            connectors: {
+              type: "curve",
+              style: {
+                "stroke-width": 2,
+                "stroke-linecap": "round",
+                "stroke": "#ccc"
+              }
+            }
+          },
+          nodeStructure
+        });
+      });
+    });
   },
 
-  async showExpressions(list, elmTitleName, elmName) {
+  async showExpressions(list, elmName, cb = null) {
     const expressions = [];
-    const titles = [];
 
     for (let i = 0; i < list.length; ++i) {
       const expression = await this.getDataWithFullPath(list[i]);
-      if (!expression.derivedFrom) {
-        titles.push(expression.title);
-      }
       expressions.push(expression);
-    }
-
-    if (elmTitleName) {
-      document.getElementById(elmTitleName).textContent = titles.join(", ");
     }
 
     const elm = document.getElementById(elmName);
@@ -244,6 +297,10 @@ const Biflow = {
       div.appendChild(document.createTextNode("Titolo: "));
       div.appendChild(document.createTextNode(expression.title));
     });
+
+    if (cb) {
+      cb(expressions);
+    }
   },
 
   async showWorkAuthor(data) {
@@ -373,7 +430,7 @@ const Biflow = {
 
     this.showPersonNicknames(data);
     this.showPersonWorks(data);
-    this.showExpressions(data.translations, null, "personTranslations");
+    this.showExpressions(data.translations, "personTranslations");
     this.showLocalisations(data.codices, "personCodices");
   },
 
@@ -516,7 +573,7 @@ const Biflow = {
     this.showExpressionTranslator(data);
     this.showExpressionTextualTypology(data);
     this.showExpressionDerivedFrom(data);
-    this.showExpressions(data.derivedExpressions, null, "expressionDerivedExpressions");
+    this.showExpressions(data.derivedExpressions, "expressionDerivedExpressions");
     this.showLocalisations(data.localisations, "expressionLocalisations");
   },
 

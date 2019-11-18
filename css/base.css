@@ -85,3 +85,14 @@ div.grigio_ar .divider-invisibile-doppio{
 	color:#2281c1;
 	font-weight: 700;
 }
+
+.diagram {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 25px;
+}
+
+.node-title {
+  font-size: 0.8em;
+  max-width: 250px;
+}
