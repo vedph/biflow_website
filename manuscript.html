@@ -1,0 +1,132 @@
+---
+layout: page
+---
+
+<div class="grigio_ar">
+  <div class="container">
+    <h1 id="manuscriptMainTitle">Loading</h1>
+  </div>
+</div>
+
+<div class="container">  
+  <div class="row">
+    <div class="col">    
+
+      <div class="table-responsive"> 
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <th scope="row">Segnatura</th>
+              <td id="manuscriptShelfMark"></td>
+            </tr>
+            <tr>
+              <th scope="row">Biblioteca</th>
+              <td id="manuscriptLibrary"></td>
+            </tr>
+            <tr>
+              <th scope="row">Stato di esame</th>
+              <td id="manuscriptCheckStatus"></td>
+            </tr>
+            <tr>
+              <th scope="row">Data</th>
+              <td id="manuscriptDate"></td>
+            </tr>
+            <tr>
+              <th scope="row">Altezza</th>
+              <td id="manuscriptHeight"></td>
+            </tr>
+            <tr>
+              <th scope="row">Larghezza</th>
+              <td id="manuscriptWidth"></td>
+            </tr>
+            <tr>
+              <th scope="row">Materiale</th>
+              <td id="manuscriptMaterial"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+       
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Legatura
+           </div>
+           <div class="card-body" id="manuscriptBinding"></div>
+       </div>
+
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Descrizione Collazione
+           </div>
+           <div class="card-body" id="manuscriptCollationDescription"></div>
+       </div>
+
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Descrizione Decorazioni
+           </div>
+           <div class="card-body" id="manuscriptDecoDescription"></div>
+       </div>
+
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Descrizione Fisica
+           </div>
+           <div class="card-body" id="manuscriptPhysDescription"></div>
+       </div>
+
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Descrizione Scrittura
+           </div>
+           <div class="card-body" id="manuscriptScriptDescription"></div>
+       </div>
+
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Storia
+           </div>
+           <div class="card-body" id="manuscriptHistory"></div>
+       </div>
+
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Note
+           </div>
+           <div class="card-body" id="manuscriptNote"></div>
+       </div>
+
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Sistema di rigatura
+           </div>
+           <div class="card-body" id="manuscriptRuledLines"></div>
+       </div>
+
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Luogo
+           </div>
+           <div class="card-body" id="manuscriptPlace"></div>
+       </div>
+       
+       <div class="card">
+           <div class="card-header font-weight-bold">
+              Numero di carte
+           </div>
+           <ul class="list-group list-group-flush" id="manuscriptLocalisations">
+           </ul>
+       </div>
+
+    </div> 
+  </div> 
+</div>
+
+<script type="text/javascript">
+
+const searchParams = new URLSearchParams(window.location.search);
+const id = searchParams.get("id");
+
+Biflow.showFullManuscript(id);
+
+</script>
