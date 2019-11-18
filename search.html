@@ -1,51 +1,47 @@
 ---
 layout: page
 ---
-<ul id="list"></ul>
 
-<script>
+<div class="grigio_ar">
+  <div class="container">
+    <h1 id="searchMainTitle">Ricerca in corso...</h1>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-12 col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <form action="/search" method="GET">
+            <div class="form-row">
+              <div class="col-md-10">
+                <input type="text" class="form-control" name="search" placeholder="...">
+              </div>
+              <div class="col-md-2">
+                <button class="btn btn-primary btn-block" type="submit">ricerca</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Risultati</h2>
+
+  <div class="row" id="resultsContainer"></div>
+
+</div>
+
+<script type="text/javascript">
+
 const search = new URLSearchParams(location.search).get("search");
-const ul = document.getElementById("list");
+Biflow.search(search);
 
-while (ul.firstChild) ul.firstChild.remove();
+</script>
 
-searchForWorks(ul, search);
-searchForPeople(ul, search);
 
-async function searchForWorks(ul, search) {
-  const resp = await fetch("https://mizar.unive.it/catalogo_biflow/api/public/api/works");
-  const json = await resp.json();
-  const works = json['hydra:member'];
-
-  works.forEach(work => {
-    if (search && work.code.toLowerCase().indexOf(search) != -1) {
-      const li = document.createElement("li");
-      ul.appendChild(li);
-
-      const anchor = document.createElement('a');
-      anchor.href = "/work?id=" + work.id;
-      anchor.appendChild(document.createTextNode("Work: " + work.code));
-      li.appendChild(anchor);
-    }
-  });
-}
-
-async function searchForPeople(ul, search) {
-  const resp = await fetch("https://mizar.unive.it/catalogo_biflow/api/public/api/people");
-  const json = await resp.json();
-  const people = json['hydra:member'];
-
-  people.forEach(person => {
-    if (search && person.name.toLowerCase().indexOf(search) != -1) {
-      const li = document.createElement("li");
-      ul.appendChild(li);
-
-      const anchor = document.createElement('a');
-      anchor.href = "/person?id=" + person.id;
-      anchor.appendChild(document.createTextNode("Person: " + person.name));
-      li.appendChild(anchor);
-    }
-  });
-}
 
 </script>

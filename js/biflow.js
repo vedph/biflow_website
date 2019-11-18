@@ -249,7 +249,7 @@ const Biflow = {
   async showWorkAuthor(data) {
     const author = await this.getDataWithFullPath(data.author);
 
-    const a = document.createElement("a"); 
+    const a = document.createElement("a");
     a.textContent = author.name;
     a.href = "/person?id=" + author.id;
 
@@ -584,4 +584,66 @@ const Biflow = {
     const textualTypology = await this.getDataWithFullPath(data.textualTypology);
     elm.textContent = textualTypology.textualTypology;
   },
+
+  async search(search) {
+    this.showLoader("resultsContainer");
+
+    search = search.toLowerCase();
+
+    const works = await this.searchForWorks(search);
+    const people = await this.searchForPeople(search);
+
+    document.getElementById("searchMainTitle").textContent = "Risultati: " + (works.length + people.length);
+
+    const elm = document.getElementById("resultsContainer");
+    this.removeContent(elm);
+
+    const ul = document.createElement("ul");
+    elm.appendChild(ul);
+
+    works.forEach(work => ul.appendChild(work));
+    people.forEach(person => ul.appendChild(person));
+  },
+
+  async searchForWorks(search) {
+    const results = [];
+
+    const works = await this.getData("/works");
+    works.forEach(work => {
+      if (search && work.code.toLowerCase().indexOf(search) != -1) {
+        const li = document.createElement("li");
+        results.push(li);
+
+        li.appendChild(document.createTextNode("Scheda: "));
+
+        const anchor = document.createElement('a');
+        anchor.href = "/work?id=" + work.id;
+        anchor.appendChild(document.createTextNode(work.code));
+        li.appendChild(anchor);
+      }
+    });
+
+    return results;
+  },
+
+  async searchForPeople(search) {
+    const results = [];
+
+    const people = await this.getData("/people");
+    people.forEach(person => {
+      if (search && person.name.toLowerCase().indexOf(search) != -1) {
+        const li = document.createElement("li");
+        results.push(li);
+
+        li.appendChild(document.createTextNode("Persona: "));
+
+        const anchor = document.createElement('a');
+        anchor.href = "/person?id=" + person.id;
+        anchor.appendChild(document.createTextNode(person.name));
+        li.appendChild(anchor);
+      }
+    });
+
+    return results;
+  }
 };
