@@ -95,7 +95,7 @@ const Biflow = {
     div.appendChild(document.createTextNode("Nome: "));
 
     const anchor = document.createElement('a');
-    anchor.href = "/person?id=" + person.id;
+    anchor.href = this.baseurl + "/person?id=" + person.id;
     anchor.appendChild(document.createTextNode(person.name));
     div.appendChild(anchor);
 
@@ -134,7 +134,7 @@ const Biflow = {
     div.appendChild(document.createTextNode("Code: "));
 
     const anchor = document.createElement('a');
-    anchor.href = "/manuscript?id=" + manuscript.id;
+    anchor.href = this.baseurl + "/manuscript?id=" + manuscript.id;
     anchor.appendChild(document.createTextNode(manuscript.shelfMark));
     div.appendChild(anchor);
 
@@ -170,7 +170,7 @@ const Biflow = {
     div.appendChild(document.createTextNode("Code: "));
 
     const anchor = document.createElement('a');
-    anchor.href = "/work?id=" + work.id;
+    anchor.href = this.baseurl + "/work?id=" + work.id;
     anchor.appendChild(document.createTextNode(work.code));
     div.appendChild(anchor);
 
@@ -216,7 +216,7 @@ const Biflow = {
             text: {
               code: {
                 val: e.code,
-                href: "/expression?id=" + e.id,
+                href: this.baseurl + "/expression?id=" + e.id,
               },
               title: e.title,
             },
@@ -289,7 +289,7 @@ const Biflow = {
       div.appendChild(document.createTextNode("Code: "));
 
       const anchor = document.createElement('a');
-      anchor.href = "/expression?id=" + expression.id;
+      anchor.href = this.baseurl + "/expression?id=" + expression.id;
       anchor.appendChild(document.createTextNode(expression.code));
       div.appendChild(anchor);
 
@@ -308,7 +308,7 @@ const Biflow = {
 
     const a = document.createElement("a");
     a.textContent = author.name;
-    a.href = "/person?id=" + author.id;
+    a.href = this.baseurl + "/person?id=" + author.id;
 
     const elm = document.getElementById("workAuthor");
     this.removeContent(elm);
@@ -353,7 +353,7 @@ const Biflow = {
       li.appendChild(div);
 
       const anchor = document.createElement('a');
-      anchor.href = "/person?id=" + attribution.id;
+      anchor.href = this.baseurl + "/person?id=" + attribution.id;
       anchor.appendChild(document.createTextNode(attribution.name));
       div.appendChild(anchor);
     });
@@ -475,7 +475,7 @@ const Biflow = {
       if (localisation.manuscript) {
         div.appendChild(document.createTextNode("Manoscritto: "));
         let anchor = document.createElement('a');
-        anchor.href = "/manuscript?id=" + localisation.manuscript.id;
+        anchor.href = this.baseurl + "/manuscript?id=" + localisation.manuscript.id;
         anchor.appendChild(document.createTextNode(localisation.manuscript.shelfMark));
         div.appendChild(anchor);
         div.appendChild(document.createElement("br"));
@@ -484,7 +484,7 @@ const Biflow = {
       if (localisation.expression) {
         div.appendChild(document.createTextNode("Expressione: "));
         let anchor = document.createElement('a');
-        anchor.href = "/expression?id=" + localisation.expression.id;
+        anchor.href = this.baseurl + "/expression?id=" + localisation.expression.id;
         anchor.appendChild(document.createTextNode(localisation.expression.title));
         div.appendChild(anchor);
         div.appendChild(document.createElement("br"));
@@ -493,7 +493,7 @@ const Biflow = {
       if (localisation.copyist) {
         div.appendChild(document.createTextNode("Copista: "));
         let anchor = document.createElement('a');
-        anchor.href = "/person?id=" + localisation.copyist.id;
+        anchor.href = this.baseurl + "/person?id=" + localisation.copyist.id;
         anchor.appendChild(document.createTextNode(localisation.copyist.name));
         div.appendChild(anchor);
         div.appendChild(document.createElement("br"));
@@ -536,7 +536,7 @@ const Biflow = {
       div.appendChild(document.createTextNode("Code: "));
 
       const anchor = document.createElement('a');
-      anchor.href = "/work?id=" + work.id;
+      anchor.href = this.baseurl + "/work?id=" + work.id;
       anchor.appendChild(document.createTextNode(work.code));
       div.appendChild(anchor);
     });
@@ -586,7 +586,7 @@ const Biflow = {
     const work = await this.getDataWithFullPath(data.work);
 
     const anchor = document.createElement('a');
-    anchor.href = "/work?id=" + work.id;
+    anchor.href = this.baseurl + "/work?id=" + work.id;
     anchor.appendChild(document.createTextNode(work.code));
 
     const elm = document.getElementById("expressionWork");
@@ -605,7 +605,7 @@ const Biflow = {
     const person = await this.getDataWithFullPath(data.translator);
 
     const anchor = document.createElement('a');
-    anchor.href = "/person?id=" + person.id;
+    anchor.href = this.baseurl + "/person?id=" + person.id;
     anchor.appendChild(document.createTextNode(person.name));
 
     this.removeContent(elm);
@@ -623,7 +623,7 @@ const Biflow = {
     const expression = await this.getDataWithFullPath(data.derivedFrom);
 
     const anchor = document.createElement('a');
-    anchor.href = "/expression?id=" + expression.id;
+    anchor.href = this.baseurl + "/expression?id=" + expression.id;
     anchor.appendChild(document.createTextNode(expression.code));
 
     this.removeContent(elm);
@@ -674,7 +674,7 @@ const Biflow = {
         li.appendChild(document.createTextNode("Scheda: "));
 
         const anchor = document.createElement('a');
-        anchor.href = "/work?id=" + work.id;
+        anchor.href = this.baseurl + "/work?id=" + work.id;
         anchor.appendChild(document.createTextNode(work.code));
         li.appendChild(anchor);
       }
@@ -695,7 +695,7 @@ const Biflow = {
         li.appendChild(document.createTextNode("Persona: "));
 
         const anchor = document.createElement('a');
-        anchor.href = "/person?id=" + person.id;
+        anchor.href = this.baseurl + "/person?id=" + person.id;
         anchor.appendChild(document.createTextNode(person.name));
         li.appendChild(anchor);
       }

@@ -1,6 +1,6 @@
 title: BiFlow Catalogue
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "http://foobar.foo"
+baseurl: "/biflow_website" # the subpath of your site, e.g. /blog
+url: "https://tmancinelli.github.io/biflow_website"
 description: something..
 email: foo@bar.it
 
