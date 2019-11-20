@@ -645,12 +645,49 @@ const Biflow = {
   async search(search) {
     this.showLoader("resultsContainer");
 
+    const jsonLD = await fetch(this.URL + this.path + "/docs.jsonld").then(r => r.json());
+
+    const jsonLDWork = jsonLD["hydra:supportedClass"].find(o => o["@id"] === "#Work");
+    const jsonLDPerson = jsonLD["hydra:supportedClass"].find(o => o["@id"] === "#Person");
+    const jsonLDManuscript = jsonLD["hydra:supportedClass"].find(o => o["@id"] === "#Manuscript");
+
     search = search.toLowerCase();
 
-    const works = await this.searchForWorks(search);
-    const people = await this.searchForPeople(search);
+    const works = await this.searchJsonLD(jsonLDWork, "/works", search, work => {
+      const li = document.createElement("li");
+      li.appendChild(document.createTextNode("Scheda: "));
 
-    document.getElementById("searchMainTitle").textContent = "Risultati: " + (works.length + people.length);
+      const anchor = document.createElement('a');
+      anchor.href = this.baseurl + "/work?id=" + work.id;
+      anchor.appendChild(document.createTextNode(work.code));
+      li.appendChild(anchor);
+
+      return li;
+    });
+
+    const people = await this.searchJsonLD(jsonLDPerson, "/people", search, person => {
+      const li = document.createElement("li");
+      li.appendChild(document.createTextNode("Persona: "));
+
+      const anchor = document.createElement('a');
+      anchor.href = this.baseurl + "/person?id=" + person.id;
+      anchor.appendChild(document.createTextNode(person.name));
+      li.appendChild(anchor);
+      return li;
+    });
+
+    const manuscripts = await this.searchJsonLD(jsonLDManuscript, "/manuscripts", search, manuscript => {
+      const li = document.createElement("li");
+      li.appendChild(document.createTextNode("Manoscritto: "));
+
+      const anchor = document.createElement('a');
+      anchor.href = this.baseurl + "/manuscript?id=" + manuscript.id;
+      anchor.appendChild(document.createTextNode(manuscript.shelfMark));
+      li.appendChild(anchor);
+      return li;
+    });
+
+    document.getElementById("searchMainTitle").textContent = "Risultati: " + (works.length + people.length + manuscripts.length);
 
     const elm = document.getElementById("resultsContainer");
     this.removeContent(elm);
@@ -660,47 +697,37 @@ const Biflow = {
 
     works.forEach(work => ul.appendChild(work));
     people.forEach(person => ul.appendChild(person));
+    manuscripts.forEach(manuscript => ul.appendChild(manuscript));
   },
 
-  async searchForWorks(search) {
-    const results = [];
+  async searchJsonLD(obj, path, search, cb) {
+    if (!search) {
+      return [];
+    }
 
-    const works = await this.getData("/works");
-    works.forEach(work => {
-      if (search && work.code.toLowerCase().indexOf(search) != -1) {
-        const li = document.createElement("li");
-        results.push(li);
+    const array = await this.getData(path);
+    const selectedObjs = [];
 
-        li.appendChild(document.createTextNode("Scheda: "));
-
-        const anchor = document.createElement('a');
-        anchor.href = this.baseurl + "/work?id=" + work.id;
-        anchor.appendChild(document.createTextNode(work.code));
-        li.appendChild(anchor);
+    obj["hydra:supportedProperty"].forEach(property => {
+      property = property["hydra:property"];
+      if (property["range"].startsWith("#")) {
+        return;
       }
+
+      const label = property["rdfs:label"];
+      array.forEach(obj => {
+        if (obj[label] && ("" + obj[label]).toLowerCase().indexOf(search) != -1 &&
+            !selectedObjs.includes(obj)) {
+          selectedObjs.push(obj);
+        }
+      });
+    });
+
+    const results = [];
+    selectedObjs.forEach(obj => {
+      results.push(cb(obj));
     });
 
     return results;
   },
-
-  async searchForPeople(search) {
-    const results = [];
-
-    const people = await this.getData("/people");
-    people.forEach(person => {
-      if (search && person.name.toLowerCase().indexOf(search) != -1) {
-        const li = document.createElement("li");
-        results.push(li);
-
-        li.appendChild(document.createTextNode("Persona: "));
-
-        const anchor = document.createElement('a');
-        anchor.href = this.baseurl + "/person?id=" + person.id;
-        anchor.appendChild(document.createTextNode(person.name));
-        li.appendChild(anchor);
-      }
-    });
-
-    return results;
-  }
 };
