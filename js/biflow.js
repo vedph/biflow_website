@@ -139,7 +139,7 @@ const Biflow = {
     div.appendChild(anchor);
 
     div.appendChild(document.createElement("br"));
-    div.appendChild(document.createTextNode("N. Espressioni: " + manuscript.localisations.length));
+    div.appendChild(document.createTextNode("N. Versioni: " + manuscript.localisations.length));
   },
 
   async showWorks(elmName, filter) {
@@ -182,8 +182,8 @@ const Biflow = {
 
   async showFullWork(id) {
     // Let's show the loading for any active part of the page.
-    ["workCode", "workTitle", "workGenres", "workContent", "workOtherTranslations",
-     "workAuthor", "workRelatedWorks"].forEach(elmName => this.showLoader(elmName));
+    ["workCode", "workCodeDownload", "workTitle", "workGenres", "workContent", "workOtherTranslations",
+     "workAuthor", "workRelatedWorks", "workEditor"].forEach(elmName => this.showLoader(elmName));
     ["workAttributions", "workExpressions"].forEach(elmName => this.showLoaderInUL(elmName));
 
     const data = await this.getData("/works/" + id);
@@ -195,10 +195,15 @@ const Biflow = {
     document.getElementById("workOtherTranslations").innerHTML = data.otherTranslations;
     document.getElementById("workRelatedWorks").innerHTML = data.relatedWorks;
 
+    const downloadAnchor = document.getElementById("workCodeDownload");
+    downloadAnchor.textContent = data.code;
+    downloadAnchor.title = data.code;
+
     // The complex ones.
     this.showWorkAuthor(data);
     this.showWorkAttributions(data);
     this.showWorkGenres(data);
+    this.showWorkEditor(data);
     this.showExpressions(data.expressions, "workExpressions", expressions => {
       const topLevelExpressions = [];
       expressions.forEach(expression => {
@@ -209,56 +214,62 @@ const Biflow = {
 
       document.getElementById("workTitle").textContent = topLevelExpressions.map(e => e.title).join(", ");
 
-      // Diagram.
-      topLevelExpressions.forEach(e => {
-        const createDiagram = e => {
-          const node = {
-            text: {
-              code: {
-                val: e.code,
-                href: this.baseurl + "/expression?id=" + e.id,
-              },
-              title: e.title,
-            },
-            children: [],
-            stackChildren: true,
-          };
+      const workDiagram = document.getElementById("workDiagram");
 
-          e.derivedExpressions.forEach(de => {
-            const id = parseInt(de.substr(de.lastIndexOf("/") +1), 10);
-            de = expressions.find(ee => ee.id === id);
-            if (de) {
-              node.children.push(createDiagram(de));
+      // Diagram.
+      topLevelExpressions.forEach(expression => {
+        const ul = document.createElement("ul");
+        ul.setAttribute("class", "list-espressione");
+        workDiagram.appendChild(ul);
+
+        const li = document.createElement("li");
+        li.textContent = expression.title;
+        ul.appendChild(li);
+
+        // This function creates a list of derived expressions.
+        function appendDerivedExpressionOf(li, expression) {
+          // Let's create a list of the derived expression.
+          const list = [];
+          expressions.forEach(e => {
+            // This expression is the top-level. Ignore it.
+            if (!e.derivedFrom) {
+              return;
             }
+
+            const id = parseInt(e.derivedFrom.substr(e.derivedFrom.lastIndexOf("/") + 1), 10);
+
+            // This expression doesn't belong to our expression. Ignore it.
+            if (id != expression.id) {
+              return;
+            }
+
+            list.push(e);
           });
 
-          return node;
-        };
+          // No derived expressions.
+          if (list.length === 0) {
+            return;
+          }
 
-        const div = document.createElement("div");
-        document.getElementById("workDiagram").appendChild(div);
-        div.id = "expression_" + e.id;
+          const ul = document.createElement("ul");
+          li.appendChild(ul);
 
-        const nodeStructure = createDiagram(e);
-        const charts = new Treant({
-          chart: {
-            container: "#expression_" + e.id,
-            levelSeparation:    25,
-            siblingSeparation:  70,
-            subTeeSeparation:   70,
-            padding: 35,
-            node: { HTMLclass: "diagram" },
-            connectors: {
-              type: "curve",
-              style: {
-                "stroke-width": 2,
-                "stroke-linecap": "round",
-                "stroke": "#ccc"
-              }
-            }
-          },
-          nodeStructure
-        });
+          // For each derived expression, let's create a "li" element and run recursively.
+          list.forEach(e => {
+            const subLi = document.createElement("li");
+            ul.appendChild(subLi);
+
+            const anchor = document.createElement("a");
+            anchor.href = Biflow.baseurl + "/expression?id=" + e.id;
+            anchor.textContent = e.title;
+            subLi.appendChild(anchor);
+
+            // Recursively...
+            appendDerivedExpressionOf(subLi, e);
+          });
+        }
+
+        appendDerivedExpressionOf(li, expression);
       });
     });
   },
@@ -301,6 +312,12 @@ const Biflow = {
     if (cb) {
       cb(expressions);
     }
+  },
+
+  async showWorkEditor(data) {
+    const editor = await this.getDataWithFullPath(data.editor);
+    const elm = document.getElementById("workEditor");
+    elm.textContent = editor.editor;
   },
 
   async showWorkAuthor(data) {
@@ -557,7 +574,7 @@ const Biflow = {
     const data = await this.getData("/expressions/" + id);
 
     // The simple elements.
-    document.getElementById("expressionMainTitle").textContent = "Espressione: " + data.code;
+    document.getElementById("expressionMainTitle").textContent = "Versione: " + data.code;
     document.getElementById("expressionCode").textContent = data.code;
     document.getElementById("expressionDate").textContent = data.date;
     document.getElementById("expressionTitle").textContent = data.title;

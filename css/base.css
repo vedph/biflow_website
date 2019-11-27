@@ -96,3 +96,39 @@ div.grigio_ar .divider-invisibile-doppio{
   font-size: 0.8em;
   max-width: 250px;
 }
+
+
+/*******************************************************/
+/* ALBERO                                              */
+/*******************************************************/
+ul.list-espressione, ul.list-espressione ul {
+	list-style: none;
+	margin: 6px 0 0 20px;
+	padding: 5px 0px 5px 7px;
+	padding: 0;
+} 
+ul.list-espressione ul {
+	margin-left: 10px;
+}
+ul.list-espressione ul li {
+	margin:  0 0 0 10px;
+	padding: 4px 0px 4px 7px;
+	border-left:1px solid rgb(100,100,100);
+}
+ul.list-espressione ul li:last-child {
+	border-left:none;
+}
+ul.list-espressione ul li:before {
+	position:relative;
+	top:-0.3em;
+	height:1em;
+	width:10px;
+	color:white;
+	border-bottom:1px solid rgb(100,100,100);
+	content:"";
+	display:inline-block;
+	left:-7px;
+}
+ul.list-espressione ul li:last-child:before {
+	border-left:1px solid rgb(100,100,100);   
+}

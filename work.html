@@ -12,32 +12,47 @@ layout: page
   <div class="row">
     <div class="col">
 
-      <div class="table-responsive">
-        <table class="table table-borderless">
-          <tbody>
-            <tr>
-              <th scope="row">Codice</th>
-              <td id="workCode"></td>
-            </tr>
-            <tr>
-              <th scope="row">Titolo</th>
-              <td id="workTitle"></td>
-            </tr>
-            <tr>
-              <th scope="row">Autore</th>
-              <td id="workAuthor"></td>
-            </tr>
-            <tr>
-              <th scope="row">Genere</th>
-              <td id="workGenres"></td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="row">
+        <div class="col-md-8">   
+          <div class="w-100 divider-invisibile"></div>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Codice</dt>
+            <dd class="col-sm-9" id="workCode"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Titolo</dt>
+            <dd class="col-sm-9" id="workTitle"></dd>
+          </dl>
+ 
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Autore</dt>
+            <dd class="col-sm-9" id="workAuthor"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Genere</dt>
+            <dd class="col-sm-9" id="workGenres"></dd>
+          </dl>
+        </div>
+
+        <div class="col-md-4">                    
+          <div class="card uploads">
+            <div class="card-header">scarica tutta la scheda</div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item list-group-item-action">
+                <img src="{{ site.baseurl }}/unive/img/pdf.png" alt="file pdf" title="" width="32">
+                <a href="#" title="" target="_blank" id="workCodeDownload"></a>
+              </li>
+            </ul> 
+          </div>  
+        </div>
       </div>
 
        <div class="card">
            <div class="card-header font-weight-bold">
-              Diagramma espressioni
+              Opera e relative versioni
            </div>
            <div class="card-body" id="workDiagram"></div>
        </div>
@@ -63,7 +78,7 @@ layout: page
        </div>
        <div class="card">
            <div class="card-header font-weight-bold">
-              Espressioni
+              Versioni
            </div>
            <ul class="list-group list-group-flush" id="workExpressions">
            </ul>
@@ -73,8 +88,21 @@ layout: page
               Lavori collegati
            </div>
            <div class="card-body" id="workRelatedWorks"></div>
-       </div>
+      </div>
 
+      <div class="w-100 divider-invisibile-doppio"></div>
+      
+      <dl class="row">
+          <dt class="col-sm-3">Autore:</dt>
+          <dd class="col-sm-9" id="workEditor"></dd>
+      </dl>
+
+      <dl class="row">
+          <dt class="col-sm-3">Come citare questa scheda:</dt>
+          <dd class="col-sm-9">
+          ESEMPIO! A. Montefusco, <em>AldSieRC</em>, in <em>Toscana Bilingue - Catalogo Biflow</em>, Venezia, ECF, pp. 90-110, visualizzato il <strong>20/22/2019</strong>
+          </dd>
+      </dl>
     </div>
   </div>
 </div>
