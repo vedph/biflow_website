@@ -432,8 +432,15 @@ const Biflow = {
   },
 
   async showManuscriptMaterial(data) {
+    const elm = document.getElementById("manuscriptMaterial");
+
+    if (!data.material) {
+      this.removeContent(elm);
+      return;
+    }
+
     const material = await this.getDataWithFullPath(data.material);
-    document.getElementById("manuscriptMaterial").textContent = material.material;
+    elm.textContent = material.material;
   },
 
   async showManuscriptRuledLineTechnique(data) {
