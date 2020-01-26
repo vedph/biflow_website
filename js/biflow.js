@@ -3,7 +3,8 @@ const Biflow = {
   path: "/catalogo_biflow/api/public/api",
 
   updateCounters() {
-    this.updateCounter("counter-works", "/works");
+    this.updateCounter("counter-works", "/works",
+      work => work.published);
     this.updateCounter("counter-manuscripts", "/manuscripts");
     this.updateCounter("counter-translators", "/people",
       person => person.translations.length > 0);
@@ -153,7 +154,8 @@ const Biflow = {
     const ul = document.createElement("ul");
     elm.appendChild(ul);
 
-    data.forEach(work => this.showWork(ul, work, filter));
+    data.filter(work => work.published)
+        .forEach(work => this.showWork(ul, work, filter));
   },
 
   showWork(ul, work, filter) {
@@ -207,7 +209,7 @@ const Biflow = {
     this.showExpressions(data.expressions, "workExpressions", expressions => {
       const topLevelExpressions = [];
       expressions.forEach(expression => {
-        if (!expression.derivedFrom) {
+        if (expression.derivedFromExpressions.length === 0) {
           topLevelExpressions.push(expression);
         }
       });
@@ -232,11 +234,12 @@ const Biflow = {
           const list = [];
           expressions.forEach(e => {
             // This expression is the top-level. Ignore it.
-            if (!e.derivedFrom) {
+            if (e.derivedFromExpressions.length === 0) {
               return;
             }
 
-            const id = parseInt(e.derivedFrom.substr(e.derivedFrom.lastIndexOf("/") + 1), 10);
+            // TODO What about if we have more than 1?
+            const id = parseInt(e.derivedFromExpressions[0].substr(e.derivedFromExpressions[0].lastIndexOf("/") + 1), 10);
 
             // This expression doesn't belong to our expression. Ignore it.
             if (id != expression.id) {
@@ -335,10 +338,8 @@ const Biflow = {
   async showWorkGenres(data) {
     const genres = [];
     for (let i = 0; i < data.genres.length; ++i) {
-      // This is the work-genre.
-      const workGenreData = await this.getDataWithFullPath(data.genres[i]);
       // This is the genre.
-      const genreData = await this.getDataWithFullPath(workGenreData.genre);
+      const genreData = await this.getDataWithFullPath(data.genres[i]);
       genres.push(genreData.genre);
     }
     document.getElementById("workGenres").textContent = genres.join(", ");
@@ -384,7 +385,8 @@ const Biflow = {
      "manuscriptBinding", "manuscriptDecoDescription",
      "manuscriptHistory",  "manuscriptNote", "manuscriptPlace",
      "manuscriptPhysDescription", "manuscriptScriptDescription",
-     "manuscriptRuledLines", ]
+     "manuscriptRuledLines", "manuscriptRuledLineTechnique",
+     "manuscriptEditor", ]
       .forEach(elmName => this.showLoader(elmName));
     ["manuscriptLocalisations", ].forEach(elmName => this.showLoaderInUL(elmName));
 
@@ -403,13 +405,16 @@ const Biflow = {
     document.getElementById("manuscriptScriptDescription").innerHTML = data.scriptDescription;
     document.getElementById("manuscriptHistory").innerHTML = data.history;
     document.getElementById("manuscriptNote").innerHTML = data.note;
+    document.getElementById("manuscriptContent").innerHTML = data.content;
     document.getElementById("manuscriptPlace").innerHTML = data.place;
     document.getElementById("manuscriptRuledLines").innerHTML = data.place;
 
     this.showManuscriptCheckStatus(data);
     this.showManuscriptLibrary(data);
     this.showManuscriptMaterial(data);
+    this.showManuscriptRuledLineTechnique(data);
     this.showLocalisations(data.localisations, "manuscriptLocalisations");
+    this.showManuscriptEditor(data);
   },
 
   async showManuscriptCheckStatus(data) {
@@ -429,6 +434,29 @@ const Biflow = {
   async showManuscriptMaterial(data) {
     const material = await this.getDataWithFullPath(data.material);
     document.getElementById("manuscriptMaterial").textContent = material.material;
+  },
+
+  async showManuscriptRuledLineTechnique(data) {
+    const elm = document.getElementById("manuscriptRuledLineTechnique");
+    if (!data.ruledLineTecnique) {
+      this.removeContent(elm);
+      return;
+    }
+
+    const ruledLineTechnique = await this.getDataWithFullPath(data.ruledLineTechnique);
+    elm.textContent = ruledLineTechnique.ruledLineTechnique;
+  },
+
+  async showManuscriptEditor(data) {
+    const elm = document.getElementById("manuscriptEditor");
+
+    if (!data.editor) {
+      this.removeContent(elm);
+      return;
+    }
+
+    const editor = await this.getDataWithFullPath(data.editor);
+    elm.textContent = editor.editor;
   },
 
   async showFullPerson(id) {
@@ -632,19 +660,24 @@ const Biflow = {
   async showExpressionDerivedFrom(data) {
     const elm = document.getElementById("expressionDerivedFrom");
 
-    if (!data.derivedFrom) {
+    if (data.derivedFromExpressions.length === 0) {
       this.removeContent(elm);
       return;
     }
 
-    const expression = await this.getDataWithFullPath(data.derivedFrom);
+    const anchors = [];
 
-    const anchor = document.createElement('a');
-    anchor.href = this.baseurl + "/expression?id=" + expression.id;
-    anchor.appendChild(document.createTextNode(expression.code));
+    for (let i = 0; i < data.derivedFromExpressions.length; ++i) {
+      const expression = await this.getDataWithFullPath(data.derivedFromExpressions);
+
+      const anchor = document.createElement('a');
+      anchor.href = this.baseurl + "/expression?id=" + expression.id;
+      anchor.appendChild(document.createTextNode(expression.code));
+      anchors.push(anchor);
+    }
 
     this.removeContent(elm);
-    elm.appendChild(anchor);
+    anchors.forEach(anchor => elm.appendChild(anchor));
   },
 
   async showExpressionTextualTypology(data) {
