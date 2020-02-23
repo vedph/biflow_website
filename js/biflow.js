@@ -76,35 +76,16 @@ const Biflow = {
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
 
-    const ul = document.createElement("ul");
-    elm.appendChild(ul);
-
-    data.forEach(person => this.showPerson(ul, person, filter));
+    data.forEach(person => this.showPerson(elm, person, filter));
   },
 
-  showPerson(ul, person, filter) {
+  showPerson(elm, person, filter) {
     if (filter && person.name.toLowerCase().indexOf(filter) === -1) {
       return;
     }
 
-    const li = document.createElement('li');
-    ul.appendChild(li);
-
-    const div = document.createElement('div');
-    li.appendChild(div);
-
-    div.appendChild(document.createTextNode("Nome: "));
-
-    const anchor = document.createElement('a');
-    anchor.href = this.baseurl + "/person?id=" + person.id;
-    anchor.appendChild(document.createTextNode(person.name));
-    div.appendChild(anchor);
-
-    div.appendChild(document.createElement("br"));
-    div.appendChild(document.createTextNode(`
-      Numberi: ${person.works.length} schede,
-      ${person.translations.length} traduzioni,
-      ${person.codices.length} codici`));
+    const p = this.blockPerson(person);
+    elm.appendChild(p);
   },
 
   async showManuscripts(elmName, filter) {
@@ -115,32 +96,16 @@ const Biflow = {
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
 
-    const ul = document.createElement("ul");
-    elm.appendChild(ul);
-
-    data.forEach(manuscript => this.showManuscript(ul, manuscript, filter));
+    data.forEach(manuscript => this.showManuscript(elm, manuscript, filter));
   },
 
-  showManuscript(ul, manuscript, filter) {
+  showManuscript(elm, manuscript, filter) {
     if (filter && manuscript.code.toLowerCase().indexOf(filter) === -1) {
       return;
     }
 
-    const li = document.createElement('li');
-    ul.appendChild(li);
-
-    const div = document.createElement('div');
-    li.appendChild(div);
-
-    div.appendChild(document.createTextNode("Code: "));
-
-    const anchor = document.createElement('a');
-    anchor.href = this.baseurl + "/manuscript?id=" + manuscript.id;
-    anchor.appendChild(document.createTextNode(manuscript.shelfMark));
-    div.appendChild(anchor);
-
-    div.appendChild(document.createElement("br"));
-    div.appendChild(document.createTextNode("N. Versioni: " + manuscript.localisations.length));
+    const p = this.blockManuscript(manuscript);
+    elm.appendChild(p);
   },
 
   async showWorks(elmName, filter) {
@@ -151,35 +116,17 @@ const Biflow = {
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
 
-    const ul = document.createElement("ul");
-    elm.appendChild(ul);
-
     data.filter(work => work.published)
-        .forEach(work => this.showWork(ul, work, filter));
+        .forEach(work => this.showWork(elm, work, filter));
   },
 
-  showWork(ul, work, filter) {
+  showWork(elm, work, filter) {
     if (filter && work.code.toLowerCase().indexOf(filter) === -1) {
       return;
     }
 
-    const li = document.createElement('li');
-    ul.appendChild(li);
-
-    const div = document.createElement('div');
-    li.appendChild(div);
-
-    div.appendChild(document.createTextNode("Code: "));
-
-    const anchor = document.createElement('a');
-    anchor.href = this.baseurl + "/work?id=" + work.id;
-    anchor.appendChild(document.createTextNode(work.code));
-    div.appendChild(anchor);
-
-    div.appendChild(document.createElement("br"));
-    const p = document.createElement('p');
-    div.appendChild(p);
-    p.innerHTML = work.content;
+    const b = this.blockWork(work);
+    elm.appendChild(b);
   },
 
   async showFullWork(id) {
@@ -699,6 +646,98 @@ const Biflow = {
     elm.textContent = textualTypology.textualTypology;
   },
 
+  blockWork(work) {
+    const div = document.createElement('div');
+    div.setAttribute('class', 'row');
+
+    const col = document.createElement('div');
+    col.setAttribute('class', 'col');
+    div.appendChild(col);
+
+    const card = document.createElement('div');
+    card.setAttribute('class', 'card');
+    col.appendChild(card);
+
+    const body = document.createElement('div');
+    body.setAttribute('class', 'card-body');
+    card.appendChild(body);
+
+    const title = document.createElement('h5');
+    body.appendChild(title);
+
+    title.appendChild(document.createTextNode("Scheda "));
+
+    const anchor = document.createElement('a');
+    anchor.href = this.baseurl + "/work?id=" + work.id;
+    anchor.appendChild(document.createTextNode(work.code));
+    title.appendChild(anchor);
+
+    return div;
+  },
+
+  blockPerson(person) {
+    const div = document.createElement('div');
+    div.setAttribute('class', 'row');
+
+    const col = document.createElement('div');
+    col.setAttribute('class', 'col');
+    div.appendChild(col);
+
+    const card = document.createElement('div');
+    card.setAttribute('class', 'card');
+    col.appendChild(card);
+
+    const body = document.createElement('div');
+    body.setAttribute('class', 'card-body');
+    card.appendChild(body);
+
+    const title = document.createElement('h5');
+    body.appendChild(title);
+
+    const anchor = document.createElement('a');
+    anchor.href = this.baseurl + "/person?id=" + person.id;
+    anchor.appendChild(document.createTextNode(person.name));
+    title.appendChild(anchor);
+
+    body.appendChild(document.createTextNode(`
+      Numberi: ${person.works.length} schede,
+      ${person.translations.length} traduzioni,
+      ${person.codices.length} codici`));
+
+    return div;
+  },
+
+  blockManuscript(manuscript) {
+    const div = document.createElement('div');
+    div.setAttribute('class', 'row');
+
+    const col = document.createElement('div');
+    col.setAttribute('class', 'col');
+    div.appendChild(col);
+
+    const card = document.createElement('div');
+    card.setAttribute('class', 'card');
+    col.appendChild(card);
+
+    const body = document.createElement('div');
+    body.setAttribute('class', 'card-body');
+    card.appendChild(body);
+
+    const title = document.createElement('h5');
+    body.appendChild(title);
+
+    title.appendChild(document.createTextNode("Manoscritto "));
+
+    const anchor = document.createElement('a');
+    anchor.href = this.baseurl + "/manuscript?id=" + manuscript.id;
+    anchor.appendChild(document.createTextNode(manuscript.shelfMark));
+    title.appendChild(anchor);
+
+    body.appendChild(document.createTextNode("N. Versioni: " + manuscript.localisations.length));
+
+    return div;
+  },
+
   async search(search) {
     this.showLoader("resultsContainer");
 
@@ -710,51 +749,23 @@ const Biflow = {
 
     search = search.toLowerCase();
 
-    const works = await this.searchJsonLD(jsonLDWork, "/works", search, work => {
-      const li = document.createElement("li");
-      li.appendChild(document.createTextNode("Scheda: "));
+    const works = await this.searchJsonLD(jsonLDWork, "/works", search,
+                                          work => this.blockWork(work));
 
-      const anchor = document.createElement('a');
-      anchor.href = this.baseurl + "/work?id=" + work.id;
-      anchor.appendChild(document.createTextNode(work.code));
-      li.appendChild(anchor);
+    const people = await this.searchJsonLD(jsonLDPerson, "/people", search,
+                                           person => this.blockPerson(person));
 
-      return li;
-    });
-
-    const people = await this.searchJsonLD(jsonLDPerson, "/people", search, person => {
-      const li = document.createElement("li");
-      li.appendChild(document.createTextNode("Persona: "));
-
-      const anchor = document.createElement('a');
-      anchor.href = this.baseurl + "/person?id=" + person.id;
-      anchor.appendChild(document.createTextNode(person.name));
-      li.appendChild(anchor);
-      return li;
-    });
-
-    const manuscripts = await this.searchJsonLD(jsonLDManuscript, "/manuscripts", search, manuscript => {
-      const li = document.createElement("li");
-      li.appendChild(document.createTextNode("Manoscritto: "));
-
-      const anchor = document.createElement('a');
-      anchor.href = this.baseurl + "/manuscript?id=" + manuscript.id;
-      anchor.appendChild(document.createTextNode(manuscript.shelfMark));
-      li.appendChild(anchor);
-      return li;
-    });
+    const manuscripts = await this.searchJsonLD(jsonLDManuscript, "/manuscripts", search,
+                                                manuscript => this.blockManuscript(manuscript));
 
     document.getElementById("searchMainTitle").textContent = "Risultati: " + (works.length + people.length + manuscripts.length);
 
     const elm = document.getElementById("resultsContainer");
     this.removeContent(elm);
 
-    const ul = document.createElement("ul");
-    elm.appendChild(ul);
-
-    works.forEach(work => ul.appendChild(work));
-    people.forEach(person => ul.appendChild(person));
-    manuscripts.forEach(manuscript => ul.appendChild(manuscript));
+    works.forEach(work => elm.appendChild(work));
+    people.forEach(person => elm.appendChild(person));
+    manuscripts.forEach(manuscript => elm.appendChild(manuscript));
   },
 
   async searchJsonLD(obj, path, search, cb) {

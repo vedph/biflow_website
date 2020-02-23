@@ -30,7 +30,7 @@ title: Manoscritti
 
   <h2>Lista Manoscritti</h2>
 
-  <div class="row" id="manuscriptListContainer"></div>
+  <div class="container" id="manuscriptListContainer"></div>
 
 </div>
 
@@ -40,7 +40,7 @@ Biflow.showManuscripts("manuscriptListContainer");
 
 document.getElementById("filterButton").onclick = e => {
   const filter = document.getElementById("filter").value;
-  Biflow.showManuscripts("manuscriptListContainer", filter);
+  Biflow.showManuscripts("manuscriptListContainer", filter.toLowerCase());
 }
 
 </script>

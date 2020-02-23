@@ -30,7 +30,7 @@ title: Schede
 
   <h2>Lista schede</h2>
 
-  <div class="row" id="workListContainer"></div>
+  <div class="container" id="workListContainer"></div>
 
 </div>
 
@@ -40,7 +40,7 @@ Biflow.showWorks("workListContainer");
 
 document.getElementById("filterButton").onclick = e => {
   const filter = document.getElementById("filter").value;
-  Biflow.showWorks("workListContainer", filter);
+  Biflow.showWorks("workListContainer", filter.toLowerCase());
 }
 
 </script>

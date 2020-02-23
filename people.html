@@ -28,9 +28,9 @@ title: Persone
     </div>
   </div>
 
-  <h2>Lista schede</h2>
+  <h2>Lista persone</h2>
 
-  <div class="row" id="personListContainer"></div>
+  <div class="container" id="personListContainer"></div>
 
 </div>
 
@@ -40,7 +40,7 @@ Biflow.showPeople("personListContainer");
 
 document.getElementById("filterButton").onclick = e => {
   const filter = document.getElementById("filter").value;
-  Biflow.showPeople("personListContainer", filter);
+  Biflow.showPeople("personListContainer", filter.toLowerCase());
 }
 
 </script>
