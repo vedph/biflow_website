@@ -1,4 +1,7 @@
 const SearchSettings = {
+  // ~50 years.
+  dateDelta: 50,
+
   filterWork(work, filter) {
     return this.filterGeneric(work, filter, [
       { field: 'code', priority: 1, name: null, },
@@ -10,15 +13,18 @@ const SearchSettings = {
   filterPerson(person, filter) {
     return this.filterGeneric(person, filter, [
       { field: 'name', priority: 1, name: null, },
-      { field: 'dateBirth', priority: 2, name: "Data di nascita", },
-      { field: 'dateDeath', priority: 2, name: "Data di morte", },
+      { field: 'dateBirth', priority: 2, name: "Data di nascita",
+        cb: this.dateFilter, },
+      { field: 'dateDeath', priority: 2, name: "Data di morte",
+        cb: this.dateFilter ,},
     ]);
   },
 
   filterManuscript(manuscript, filter) {
     return this.filterGeneric(manuscript, filter, [
       { field: 'shelfMark', priority: 1, name: null, },
-      { field: 'date', priority: 2, name: "Data", },
+      { field: 'date', priority: 2, name: "Data",
+        cb: this.dateFilter, },
     ]);
   },
 
@@ -26,7 +32,11 @@ const SearchSettings = {
     let priorities = [];
 
     fields.forEach(field => {
-      if (what[field.field].toLowerCase().indexOf(filter) === -1) {
+      if (field.cb) {
+        if (!field.cb(what[field.field], filter)) {
+          return;
+        }
+      } else if (what[field.field].toLowerCase().indexOf(filter) === -1) {
         return;
       }
 
@@ -43,6 +53,90 @@ const SearchSettings = {
     });
 
     return priorities;
+  },
+
+  dateFilter(date, filter) {
+    if (date === "") {
+      return false;
+    }
+
+    filter = filter.trim();
+    let year = null;
+    let month = null;
+    let day = null;
+
+    if (/^\d\d\d\d$/.exec(filter) !== null) {
+      year = parseInt(filter, 10);
+    } else if (/^\d\d-\d\d\d\d$/.exec(filter) !== null) {
+      const parts = filter.split("-");
+      month = parseInt(parts[0], 10);
+      year = parseInt(parts[1], 10);
+    } else if (/^\d\d-\d\d-\d\d\d\d$/.exec(filter) !== null) {
+      const parts = filter.split("-");
+      day = parseInt(parts[0], 10);
+      month = parseInt(parts[1], 10);
+      year = parseInt(parts[2], 10);
+    } else {
+      return false;
+    }
+
+    // 1234
+    if (/^(\d\d\d\d)/.exec(date)) {
+      return year == parseInt(date, 10);
+    }
+
+    // ~1234
+    if (/^(~\s*\d\d\d\d)/.exec(date)) {
+      const tmp = parseInt(date.split("~")[1].trim(), 10);
+      return Math.abs(year - tmp) < SearchSettings.dateDelta;
+    }
+
+    // >1234
+    if (/^(>\s*\d\d\d\d)/.exec(date)) {
+      return year >= parseInt(date.substring(1).trim(), 10);
+    }
+
+    // >~1234
+    if (/^(>\s*~\s*\d\d\d\d)/.exec(date)) {
+      const tmp = parseInt(date.split("~")[1].trim(), 10);
+      return (year - SearchSettings.dateDelta) >= tmp;
+    }
+
+    // <1234
+    if (/^(<\s*\d\d\d\d)/.exec(date)) {
+      return year <= parseInt(date.substring(1).trim(), 10);
+    }
+
+    // <~1234
+    if (/^(<\s*~\s*\d\d\d\d)/.exec(date)) {
+      const tmp = parseInt(date.split("~")[1].trim(), 10);
+      return (year - SearchSettings.dateDelta) <= tmp;
+    }
+
+    // 01-1234
+    if (/^(\d\d-\d\d\d\d)$/.exec(date)) {
+      const parts = date.split("-");
+      if (year != parseInt(parts[1], 10)) {
+        return false;
+      }
+      return !month || parseInt(parts[0], 10) == month;
+    }
+
+    // 01-01-1234
+    if (/^(\d\d-\d\d-\d\d\d\d)$/.exec(date)) {
+      const parts = date.split("-");
+      if (year != parseInt(parts[2], 10)) {
+        return false;
+      }
+      if (month && month != parseInt(parts[1], 10)) {
+        return false;
+      }
+      return !day || day == parseInt(parts[0], 10);
+    }
+
+    // /^((~?\s*\d\d\d\d|\d\d-\d\d-\d\d\d\d|\d\d-\d\d\d\d)\s*<>\s*(~?\s*\d\d\d\d|\d\d-\d\d-\d\d\d\d|\d\d-\d\d\d\d)|)$/
+    // This is not supported because we don't have records with this settings...
+    return false;
   }
 };
 
