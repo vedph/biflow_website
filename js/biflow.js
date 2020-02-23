@@ -80,63 +80,126 @@ const SearchSettings = {
       return false;
     }
 
+    if (date[0] === '>') {
+      date = SearchSettings.parseDate(date.substring(1).trim());
+      if (date.match === '=') {
+        return year >= date.year;
+      }
+
+      if (date.match === '~') {
+        return (year + SearchSettings.dateDelta) >= date.year;
+      }
+
+      console.log("Invalid parsing: " + date);
+      return false;
+    }
+
+    if (date[0] === '<') {
+      date = SearchSettings.parseDate(date.substring(1).trim());
+      if (date.match === '=') {
+        return year <= date.year;
+      }
+
+      if (date.match === '~') {
+        return (year - SearchSettings.dateDelta) <= date.year;
+      }
+
+      console.log("Invalid parsing: " + date);
+      return false;
+    }
+
+    if (!date.includes("<>")) {
+      date = SearchSettings.parseDate(date.trim());
+      if (date.match === '~') {
+        return Math.abs(year - date.year) < SearchSettings.dateDelta;
+      }
+
+      if (date.year != year) {
+        return false;
+      }
+
+      if (month && date.month != month) {
+        return false;
+      }
+
+      if (day && date.day != day) {
+        return false;
+      }
+
+      return true;
+    }
+
+    const parts = date.split("<>").map(a => a.trim());
+    const preDate = SearchSettings.parseDate(parts[0]);
+    const postDate = SearchSettings.parseDate(parts[1]);
+
+    if (preDate.match === '~') {
+      if ((year + SearchSettings.dateDelta) < preDate.year) {
+        return false;
+      }
+    }
+
+    if (preDate.match === '=') {
+      if (preDate.year >= year) {
+        return false;
+      }
+
+      if (preDate.year === year && month && preDate.month >= month) {
+        return false;
+      }
+
+      if (preDate.year === year && month && preDate.month == month && day && preDate.day >= day) {
+        return false;
+      }
+    }
+
+    if (postDate.match === '~') {
+      if ((year - SearchSettings.dateDelta) > postDate.year) {
+        return false;
+      }
+    }
+
+    if (postDate.match === '=') {
+      if (postDate.year <= year) {
+        return false;
+      }
+
+      if (postDate.year === year && month && postDate.month <= month) {
+        return false;
+      }
+
+      if (postDate.year === year && month && postDate.month == month && day && postDate.day <= day) {
+        return false;
+      }
+    }
+
+    return true;
+  },
+
+  parseDate(date) {
     // 1234
-    if (/^(\d\d\d\d)/.exec(date)) {
-      return year == parseInt(date, 10);
+    if (/^\d\d\d\d$/.exec(date)) {
+      return { match: '=', year: parseInt(date, 10) };
     }
 
     // ~1234
-    if (/^(~\s*\d\d\d\d)/.exec(date)) {
-      const tmp = parseInt(date.split("~")[1].trim(), 10);
-      return Math.abs(year - tmp) < SearchSettings.dateDelta;
-    }
-
-    // >1234
-    if (/^(>\s*\d\d\d\d)/.exec(date)) {
-      return year >= parseInt(date.substring(1).trim(), 10);
-    }
-
-    // >~1234
-    if (/^(>\s*~\s*\d\d\d\d)/.exec(date)) {
-      const tmp = parseInt(date.split("~")[1].trim(), 10);
-      return (year - SearchSettings.dateDelta) >= tmp;
-    }
-
-    // <1234
-    if (/^(<\s*\d\d\d\d)/.exec(date)) {
-      return year <= parseInt(date.substring(1).trim(), 10);
-    }
-
-    // <~1234
-    if (/^(<\s*~\s*\d\d\d\d)/.exec(date)) {
-      const tmp = parseInt(date.split("~")[1].trim(), 10);
-      return (year - SearchSettings.dateDelta) <= tmp;
+    if (/^~\s*\d\d\d\d$/.exec(date)) {
+      return { match: '~', year: parseInt(date.split("~")[1], 10) };
     }
 
     // 01-1234
-    if (/^(\d\d-\d\d\d\d)$/.exec(date)) {
+    if (/^\d\d-\d\d\d\d$/.exec(date)) {
       const parts = date.split("-");
-      if (year != parseInt(parts[1], 10)) {
-        return false;
-      }
-      return !month || parseInt(parts[0], 10) == month;
+      return { match: '=', year: parseInt(parts[1], 10), month: parseInt(parts[0], 10) };
     }
 
     // 01-01-1234
-    if (/^(\d\d-\d\d-\d\d\d\d)$/.exec(date)) {
+    if (/^\d\d-\d\d-\d\d\d\d$/.exec(date)) {
       const parts = date.split("-");
-      if (year != parseInt(parts[2], 10)) {
-        return false;
-      }
-      if (month && month != parseInt(parts[1], 10)) {
-        return false;
-      }
-      return !day || day == parseInt(parts[0], 10);
+      return { match: '=', year: parseInt(parts[2], 10), month: parseInt(parts[1], 10), day: parseInt(parts[0], 10) };
     }
 
-    // /^((~?\s*\d\d\d\d|\d\d-\d\d-\d\d\d\d|\d\d-\d\d\d\d)\s*<>\s*(~?\s*\d\d\d\d|\d\d-\d\d-\d\d\d\d|\d\d-\d\d\d\d)|)$/
-    // This is not supported because we don't have records with this settings...
-    return false;
+    return null;
   }
 };
 
