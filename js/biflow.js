@@ -1031,6 +1031,48 @@ const Biflow = {
     return div;
   },
 
+  blockExpression(expression, results) {
+    const div = document.createElement('div');
+    div.setAttribute('class', 'row');
+
+    const col = document.createElement('div');
+    col.setAttribute('class', 'col');
+    div.appendChild(col);
+
+    const card = document.createElement('div');
+    card.setAttribute('class', 'card');
+    col.appendChild(card);
+
+    const body = document.createElement('div');
+    body.setAttribute('class', 'card-body');
+    card.appendChild(body);
+
+    const title = document.createElement('h5');
+    body.appendChild(title);
+
+    title.appendChild(document.createTextNode("Espressione "));
+
+    const anchor = document.createElement('a');
+    anchor.href = this.baseurl + "/expression?id=" + expression.id;
+    anchor.appendChild(document.createTextNode(expression.code));
+    title.appendChild(anchor);
+
+    if (results && results.length !== 0) {
+      results.filter(result => !!result.fieldName).forEach(result => {
+        const fieldName = document.createElement('div');
+        fieldName.setAttribute("class", "font-weight-bold");
+        body.appendChild(fieldName);
+        fieldName.innerText = result.fieldName;
+
+        const fieldValue = document.createElement('div');
+        body.appendChild(fieldValue);
+        fieldValue.innerHTML = result.fieldValue;
+      });
+    }
+
+    return div;
+  },
+
   async search(search) {
     this.showLoader("resultsContainer");
 
@@ -1072,23 +1114,17 @@ const Biflow = {
       };
     }).filter(elm => !!elm));
 
-    const expressions = await this.getData("/expressions").then(async expressions => {
-      let elms = [];
-      for (let i = 0; i < expressions.length; ++i) {
-        const results = SearchSettings.filterExpression(expressions[i], search);
-        if (results.length === 0) {
-          continue;
-        }
-
-        const work = await this.getDataWithFullPath(expressions[i].work);
-        elms.push({
-          elm: this.blockWork(work, results),
-          priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
-        });
+    const expressions = await this.getData("/expressions").then(expressions => expressions.map(expression => {
+      const results = SearchSettings.filterExpression(expression, search);
+      if (results.length === 0) {
+        return null;
       }
 
-      return elms;
-    });
+      return {
+        elm: this.blockExpression(expression, results),
+        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+      };
+    }).filter(elm => !!elm));
 
     const elm = document.getElementById("resultsContainer");
     this.removeContent(elm);
