@@ -10,13 +10,27 @@ const SearchSettings = {
     ]);
   },
 
+  filterExpression(expression, filter) {
+    return this.filterGeneric(expression, filter, [
+      { field: 'code', priority: 1, name: null, },
+      { field: 'title', priority: 2, name: 'Titolo', },
+      { field: 'incipit', priority: 3, name: 'Incipit', },
+      { field: 'explicit', priority: 3, name: 'Explicit', },
+      { field: 'textualHistory', priority: 3, name: 'Storia testuale', },
+      { field: 'date', priority: 2, name: 'Date',
+        cb: this.dateFilter, },
+      { field: 'editionHistory', priority: 3, name: 'Storia dell\'edizione', },
+      { field: 'manuscriptTradition', priority: 3, name: 'Tradizione del manoscritto', },
+    ]);
+  },
+
   filterPerson(person, filter) {
     return this.filterGeneric(person, filter, [
       { field: 'name', priority: 1, name: null, },
       { field: 'dateBirth', priority: 2, name: "Data di nascita",
         cb: this.dateFilter, },
       { field: 'dateDeath', priority: 2, name: "Data di morte",
-        cb: this.dateFilter ,},
+        cb: this.dateFilter, },
     ]);
   },
 
@@ -1058,10 +1072,28 @@ const Biflow = {
       };
     }).filter(elm => !!elm));
 
+    const expressions = await this.getData("/expressions").then(async expressions => {
+      let elms = [];
+      for (let i = 0; i < expressions.length; ++i) {
+        const results = SearchSettings.filterExpression(expressions[i], search);
+        if (results.length === 0) {
+          continue;
+        }
+
+        const work = await this.getDataWithFullPath(expressions[i].work);
+        elms.push({
+          elm: this.blockWork(work, results),
+          priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+        });
+      }
+
+      return elms;
+    });
+
     const elm = document.getElementById("resultsContainer");
     this.removeContent(elm);
 
-    const results = people.concat(works).concat(manuscripts);
+    const results = people.concat(works).concat(manuscripts).concat(expressions);
     results.sort((a, b) => a.priority > b.priority);
 
     document.getElementById("searchMainTitle").textContent = "Risultati: " + results.length;
