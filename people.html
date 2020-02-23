@@ -38,9 +38,12 @@ title: Persone
 
 Biflow.showPeople("personListContainer");
 
-document.getElementById("filterButton").onclick = e => {
+function search() {
   const filter = document.getElementById("filter").value;
   Biflow.showPeople("personListContainer", filter.toLowerCase());
 }
+
+document.getElementById("filter").onchange = search;
+document.getElementById("filterButton").onclick = search;
 
 </script>

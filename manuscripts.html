@@ -38,9 +38,12 @@ title: Manoscritti
 
 Biflow.showManuscripts("manuscriptListContainer");
 
-document.getElementById("filterButton").onclick = e => {
+function search() {
   const filter = document.getElementById("filter").value;
   Biflow.showManuscripts("manuscriptListContainer", filter.toLowerCase());
 }
+
+document.getElementById("filter").onchange = search;
+document.getElementById("filterButton").onclick = search;
 
 </script>

@@ -38,9 +38,12 @@ title: Schede
 
 Biflow.showWorks("workListContainer");
 
-document.getElementById("filterButton").onclick = e => {
+function search() {
   const filter = document.getElementById("filter").value;
   Biflow.showWorks("workListContainer", filter.toLowerCase());
 }
+
+document.getElementById("filter").onchange = search;
+document.getElementById("filterButton").onclick = search;
 
 </script>

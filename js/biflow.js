@@ -100,7 +100,7 @@ const Biflow = {
   },
 
   showManuscript(elm, manuscript, filter) {
-    if (filter && manuscript.code.toLowerCase().indexOf(filter) === -1) {
+    if (filter && manuscript.shelfMark.toLowerCase().indexOf(filter) === -1) {
       return;
     }
 
