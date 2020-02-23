@@ -999,12 +999,6 @@ const Biflow = {
   async search(search) {
     this.showLoader("resultsContainer");
 
-    const jsonLD = await fetch(this.URL + this.path + "/docs.jsonld").then(r => r.json());
-
-    const jsonLDWork = jsonLD["hydra:supportedClass"].find(o => o["@id"] === "#Work");
-    const jsonLDPerson = jsonLD["hydra:supportedClass"].find(o => o["@id"] === "#Person");
-    const jsonLDManuscript = jsonLD["hydra:supportedClass"].find(o => o["@id"] === "#Manuscript");
-
     search = search.toLowerCase();
 
     const people = await this.getData("/people").then(people => people.map(person => {
