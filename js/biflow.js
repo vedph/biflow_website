@@ -82,6 +82,11 @@ const SearchSettings = {
 
     if (date[0] === '>') {
       date = SearchSettings.parseDate(date.substring(1).trim());
+      if (!date) {
+        console.log("Invalid date in the DB!", date);
+        return false;
+      }
+
       if (date.match === '=') {
         return year >= date.year;
       }
@@ -96,6 +101,11 @@ const SearchSettings = {
 
     if (date[0] === '<') {
       date = SearchSettings.parseDate(date.substring(1).trim());
+      if (!date) {
+        console.log("Invalid date in the DB!", date);
+        return false;
+      }
+
       if (date.match === '=') {
         return year <= date.year;
       }
@@ -110,6 +120,11 @@ const SearchSettings = {
 
     if (!date.includes("<>")) {
       date = SearchSettings.parseDate(date.trim());
+      if (!date) {
+        console.log("Invalid date in the DB!", date);
+        return false;
+      }
+
       if (date.match === '~') {
         return Math.abs(year - date.year) < SearchSettings.dateDelta;
       }
@@ -132,6 +147,11 @@ const SearchSettings = {
     const parts = date.split("<>").map(a => a.trim());
     const preDate = SearchSettings.parseDate(parts[0]);
     const postDate = SearchSettings.parseDate(parts[1]);
+
+    if (!preDate || !postDate) {
+      console.log("Invalid date in the DB!", preDate, postDate);
+      return false;
+    }
 
     if (preDate.match === '~') {
       if ((year + SearchSettings.dateDelta) < preDate.year) {
@@ -199,6 +219,7 @@ const SearchSettings = {
       return { match: '=', year: parseInt(parts[2], 10), month: parseInt(parts[1], 10), day: parseInt(parts[0], 10) };
     }
 
+    // Something went wrong into the DB...
     return null;
   }
 };
