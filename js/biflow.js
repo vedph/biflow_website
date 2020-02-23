@@ -1,3 +1,51 @@
+const SearchSettings = {
+  filterWork(work, filter) {
+    return this.filterGeneric(work, filter, [
+      { field: 'code', priority: 1, name: null, },
+      { field: 'content', priority: 2, name: 'Contenuto', },
+      { field: 'relatedWorks', priority: 2, name: 'Lavori collegati', },
+    ]);
+  },
+
+  filterPerson(person, filter) {
+    return this.filterGeneric(person, filter, [
+      { field: 'name', priority: 1, name: null, },
+      { field: 'dateBirth', priority: 2, name: "Data di nascita", },
+      { field: 'dateDeath', priority: 2, name: "Data di morte", },
+    ]);
+  },
+
+  filterManuscript(manuscript, filter) {
+    return this.filterGeneric(manuscript, filter, [
+      { field: 'shelfMark', priority: 1, name: null, },
+      { field: 'date', priority: 2, name: "Data", },
+    ]);
+  },
+
+  filterGeneric(what, filter, fields) {
+    let priorities = [];
+
+    fields.forEach(field => {
+      if (what[field.field].toLowerCase().indexOf(filter) === -1) {
+        return;
+      }
+
+      let result = {
+        priority: field.priority,
+      };
+
+      if (field.name) {
+        result.fieldName = field.name;
+        result.fieldValue = what[field.field];
+      }
+
+      priorities.push(result);
+    });
+
+    return priorities;
+  }
+};
+
 const Biflow = {
   URL: "https://mizar.unive.it",
   path: "/catalogo_biflow/api/public/api",
@@ -80,11 +128,16 @@ const Biflow = {
   },
 
   showPerson(elm, person, filter) {
-    if (filter && person.name.toLowerCase().indexOf(filter) === -1) {
-      return;
+    let results = [];
+
+    if (filter) {
+      results = SearchSettings.filterPerson(person, filter);
+      if (results.length === 0) {
+        return;
+      }
     }
 
-    const p = this.blockPerson(person);
+    const p = this.blockPerson(person, results);
     elm.appendChild(p);
   },
 
@@ -100,11 +153,16 @@ const Biflow = {
   },
 
   showManuscript(elm, manuscript, filter) {
-    if (filter && manuscript.shelfMark.toLowerCase().indexOf(filter) === -1) {
-      return;
+    let results = [];
+
+    if (filter) {
+      results = SearchSettings.filterManuscript(manuscript, filter);
+      if (results.length === 0) {
+        return;
+      }
     }
 
-    const p = this.blockManuscript(manuscript);
+    const p = this.blockManuscript(manuscript, results);
     elm.appendChild(p);
   },
 
@@ -121,11 +179,16 @@ const Biflow = {
   },
 
   showWork(elm, work, filter) {
-    if (filter && work.code.toLowerCase().indexOf(filter) === -1) {
-      return;
+    let results = [];
+
+    if (filter) {
+      results = SearchSettings.filterWork(work, filter);
+      if (results.length === 0) {
+        return;
+      }
     }
 
-    const b = this.blockWork(work);
+    const b = this.blockWork(work, results);
     elm.appendChild(b);
   },
 
@@ -646,7 +709,7 @@ const Biflow = {
     elm.textContent = textualTypology.textualTypology;
   },
 
-  blockWork(work) {
+  blockWork(work, results) {
     const div = document.createElement('div');
     div.setAttribute('class', 'row');
 
@@ -672,10 +735,23 @@ const Biflow = {
     anchor.appendChild(document.createTextNode(work.code));
     title.appendChild(anchor);
 
+    if (results && results.length !== 0) {
+      results.filter(result => !!result.fieldName).forEach(result => {
+        const fieldName = document.createElement('div');
+        fieldName.setAttribute("class", "font-weight-bold");
+        body.appendChild(fieldName);
+        fieldName.innerText = result.fieldName;
+
+        const fieldValue = document.createElement('div');
+        body.appendChild(fieldValue);
+        fieldValue.innerHTML = result.fieldValue;
+      });
+    }
+
     return div;
   },
 
-  blockPerson(person) {
+  blockPerson(person, results) {
     const div = document.createElement('div');
     div.setAttribute('class', 'row');
 
@@ -704,10 +780,22 @@ const Biflow = {
       ${person.translations.length} traduzioni,
       ${person.codices.length} codici`));
 
+    if (results && results.length !== 0) {
+      results.filter(result => !!result.fieldName).forEach(result => {
+        const fieldName = document.createElement('div');
+        fieldName.setAttribute("class", "font-weight-bold");
+        body.appendChild(fieldName);
+        fieldName.innerText = result.fieldName;
+
+        const fieldValue = document.createElement('div');
+        body.appendChild(fieldValue);
+        fieldValue.innerHTML = result.fieldValue;
+      });
+    }
     return div;
   },
 
-  blockManuscript(manuscript) {
+  blockManuscript(manuscript, results) {
     const div = document.createElement('div');
     div.setAttribute('class', 'row');
 
@@ -735,6 +823,19 @@ const Biflow = {
 
     body.appendChild(document.createTextNode("N. Versioni: " + manuscript.localisations.length));
 
+    if (results && results.length !== 0) {
+      results.filter(result => !!result.fieldName).forEach(result => {
+        const fieldName = document.createElement('div');
+        fieldName.setAttribute("class", "font-weight-bold");
+        body.appendChild(fieldName);
+        fieldName.innerText = result.fieldName;
+
+        const fieldValue = document.createElement('div');
+        body.appendChild(fieldValue);
+        fieldValue.innerHTML = result.fieldValue;
+      });
+    }
+
     return div;
   },
 
@@ -749,53 +850,50 @@ const Biflow = {
 
     search = search.toLowerCase();
 
-    const works = await this.searchJsonLD(jsonLDWork, "/works", search,
-                                          work => this.blockWork(work));
+    const people = await this.getData("/people").then(people => people.map(person => {
+      const results = SearchSettings.filterPerson(person, search);
+      if (results.length === 0) {
+        return null;
+      }
 
-    const people = await this.searchJsonLD(jsonLDPerson, "/people", search,
-                                           person => this.blockPerson(person));
+      return {
+        elm: this.blockPerson(person, results),
+        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+      };
+    }).filter(elm => !!elm));
 
-    const manuscripts = await this.searchJsonLD(jsonLDManuscript, "/manuscripts", search,
-                                                manuscript => this.blockManuscript(manuscript));
+    const works = await this.getData("/works").then(works => works.map(work => {
+      const results = SearchSettings.filterWork(work, search);
+      if (results.length === 0) {
+        return null;
+      }
 
-    document.getElementById("searchMainTitle").textContent = "Risultati: " + (works.length + people.length + manuscripts.length);
+      return {
+        elm: this.blockWork(work, results),
+        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+      };
+    }).filter(elm => !!elm));
+
+    const manuscripts = await this.getData("/manuscripts").then(manuscripts => manuscripts.map(manuscript => {
+      const results = SearchSettings.filterManuscript(manuscript, search);
+      if (results.length === 0) {
+        return null;
+      }
+
+      return {
+        elm: this.blockManuscript(manuscript, results),
+        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+      };
+    }).filter(elm => !!elm));
 
     const elm = document.getElementById("resultsContainer");
     this.removeContent(elm);
 
-    works.forEach(work => elm.appendChild(work));
-    people.forEach(person => elm.appendChild(person));
-    manuscripts.forEach(manuscript => elm.appendChild(manuscript));
-  },
+    const results = people.concat(works).concat(manuscripts);
+    results.sort((a, b) => a.priority > b.priority);
 
-  async searchJsonLD(obj, path, search, cb) {
-    if (!search) {
-      return [];
-    }
+    document.getElementById("searchMainTitle").textContent = "Risultati: " + results.length;
 
-    const array = await this.getData(path);
-    const selectedObjs = [];
-
-    obj["hydra:supportedProperty"].forEach(property => {
-      property = property["hydra:property"];
-      if (property["range"].startsWith("#")) {
-        return;
-      }
-
-      const label = property["rdfs:label"];
-      array.forEach(obj => {
-        if (obj[label] && ("" + obj[label]).toLowerCase().indexOf(search) != -1 &&
-            !selectedObjs.includes(obj)) {
-          selectedObjs.push(obj);
-        }
-      });
-    });
-
-    const results = [];
-    selectedObjs.forEach(obj => {
-      results.push(cb(obj));
-    });
-
-    return results;
+    results.forEach(result => elm.appendChild(result.elm));
   },
 };
