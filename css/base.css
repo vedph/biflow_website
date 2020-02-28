@@ -46,6 +46,13 @@ footer.bottom > div.grigio_lg{
 	/*border-top:1px solid #bbb;*/
 	margin:4rem 0 0 0;
 }
+
+footer .full_default {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    border-top: 1px solid #bbb;
+}
+
 /*******************************************************/
 /*                     intestazione       			   */
 /*******************************************************/ 
@@ -131,4 +138,8 @@ ul.list-espressione ul li:before {
 }
 ul.list-espressione ul li:last-child:before {
 	border-left:1px solid rgb(100,100,100);   
+}
+
+.justify {
+	text-align: justify;
 }
