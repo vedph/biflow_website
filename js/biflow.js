@@ -1,3 +1,243 @@
+const SearchSettings = {
+  // ~50 years.
+  dateDelta: 50,
+
+  filterWork(work, filter) {
+    return this.filterGeneric(work, filter, [
+      { field: 'code', priority: 1, name: null, },
+      { field: 'content', priority: 2, name: 'Contenuto', },
+      { field: 'relatedWorks', priority: 2, name: 'Lavori collegati', },
+    ]);
+  },
+
+  filterExpression(expression, filter) {
+    return this.filterGeneric(expression, filter, [
+      { field: 'code', priority: 1, name: null, },
+      { field: 'title', priority: 2, name: 'Titolo', },
+      { field: 'incipit', priority: 3, name: 'Incipit', },
+      { field: 'explicit', priority: 3, name: 'Explicit', },
+      { field: 'textualHistory', priority: 3, name: 'Storia testuale', },
+      { field: 'date', priority: 2, name: 'Date',
+        cb: this.dateFilter, },
+      { field: 'editionHistory', priority: 3, name: 'Storia dell\'edizione', },
+      { field: 'manuscriptTradition', priority: 3, name: 'Tradizione del manoscritto', },
+    ]);
+  },
+
+  filterPerson(person, filter) {
+    return this.filterGeneric(person, filter, [
+      { field: 'name', priority: 1, name: null, },
+      { field: 'dateBirth', priority: 2, name: "Data di nascita",
+        cb: this.dateFilter, },
+      { field: 'dateDeath', priority: 2, name: "Data di morte",
+        cb: this.dateFilter, },
+    ]);
+  },
+
+  filterManuscript(manuscript, filter) {
+    return this.filterGeneric(manuscript, filter, [
+      { field: 'shelfMark', priority: 1, name: null, },
+      { field: 'date', priority: 2, name: "Data",
+        cb: this.dateFilter, },
+    ]);
+  },
+
+  filterGeneric(what, filter, fields) {
+    let priorities = [];
+
+    fields.forEach(field => {
+      if (field.cb) {
+        if (!field.cb(what[field.field], filter)) {
+          return;
+        }
+      } else if (what[field.field].toLowerCase().indexOf(filter) === -1) {
+        return;
+      }
+
+      let result = {
+        priority: field.priority,
+      };
+
+      if (field.name) {
+        result.fieldName = field.name;
+        result.fieldValue = what[field.field];
+      }
+
+      priorities.push(result);
+    });
+
+    return priorities;
+  },
+
+  dateFilter(date, filter) {
+    if (date === "") {
+      return false;
+    }
+
+    filter = filter.trim();
+    let year = null;
+    let month = null;
+    let day = null;
+
+    if (/^\d\d\d\d$/.exec(filter) !== null) {
+      year = parseInt(filter, 10);
+    } else if (/^\d\d-\d\d\d\d$/.exec(filter) !== null) {
+      const parts = filter.split("-");
+      month = parseInt(parts[0], 10);
+      year = parseInt(parts[1], 10);
+    } else if (/^\d\d-\d\d-\d\d\d\d$/.exec(filter) !== null) {
+      const parts = filter.split("-");
+      day = parseInt(parts[0], 10);
+      month = parseInt(parts[1], 10);
+      year = parseInt(parts[2], 10);
+    } else {
+      return false;
+    }
+
+    if (date[0] === '>') {
+      date = SearchSettings.parseDate(date.substring(1).trim());
+      if (!date) {
+        console.log("Invalid date in the DB!", date);
+        return false;
+      }
+
+      if (date.match === '=') {
+        return year >= date.year;
+      }
+
+      if (date.match === '~') {
+        return (year + SearchSettings.dateDelta) >= date.year;
+      }
+
+      console.log("Invalid parsing: " + date);
+      return false;
+    }
+
+    if (date[0] === '<') {
+      date = SearchSettings.parseDate(date.substring(1).trim());
+      if (!date) {
+        console.log("Invalid date in the DB!", date);
+        return false;
+      }
+
+      if (date.match === '=') {
+        return year <= date.year;
+      }
+
+      if (date.match === '~') {
+        return (year - SearchSettings.dateDelta) <= date.year;
+      }
+
+      console.log("Invalid parsing: " + date);
+      return false;
+    }
+
+    if (!date.includes("<>")) {
+      date = SearchSettings.parseDate(date.trim());
+      if (!date) {
+        console.log("Invalid date in the DB!", date);
+        return false;
+      }
+
+      if (date.match === '~') {
+        return Math.abs(year - date.year) < SearchSettings.dateDelta;
+      }
+
+      if (date.year != year) {
+        return false;
+      }
+
+      if (month && date.month != month) {
+        return false;
+      }
+
+      if (day && date.day != day) {
+        return false;
+      }
+
+      return true;
+    }
+
+    const parts = date.split("<>").map(a => a.trim());
+    const preDate = SearchSettings.parseDate(parts[0]);
+    const postDate = SearchSettings.parseDate(parts[1]);
+
+    if (!preDate || !postDate) {
+      console.log("Invalid date in the DB!", preDate, postDate);
+      return false;
+    }
+
+    if (preDate.match === '~') {
+      if ((year + SearchSettings.dateDelta) < preDate.year) {
+        return false;
+      }
+    }
+
+    if (preDate.match === '=') {
+      if (preDate.year >= year) {
+        return false;
+      }
+
+      if (preDate.year === year && month && preDate.month >= month) {
+        return false;
+      }
+
+      if (preDate.year === year && month && preDate.month == month && day && preDate.day >= day) {
+        return false;
+      }
+    }
+
+    if (postDate.match === '~') {
+      if ((year - SearchSettings.dateDelta) > postDate.year) {
+        return false;
+      }
+    }
+
+    if (postDate.match === '=') {
+      if (postDate.year <= year) {
+        return false;
+      }
+
+      if (postDate.year === year && month && postDate.month <= month) {
+        return false;
+      }
+
+      if (postDate.year === year && month && postDate.month == month && day && postDate.day <= day) {
+        return false;
+      }
+    }
+
+    return true;
+  },
+
+  parseDate(date) {
+    // 1234
+    if (/^\d\d\d\d$/.exec(date)) {
+      return { match: '=', year: parseInt(date, 10) };
+    }
+
+    // ~1234
+    if (/^~\s*\d\d\d\d$/.exec(date)) {
+      return { match: '~', year: parseInt(date.split("~")[1], 10) };
+    }
+
+    // 01-1234
+    if (/^\d\d-\d\d\d\d$/.exec(date)) {
+      const parts = date.split("-");
+      return { match: '=', year: parseInt(parts[1], 10), month: parseInt(parts[0], 10) };
+    }
+
+    // 01-01-1234
+    if (/^\d\d-\d\d-\d\d\d\d$/.exec(date)) {
+      const parts = date.split("-");
+      return { match: '=', year: parseInt(parts[2], 10), month: parseInt(parts[1], 10), day: parseInt(parts[0], 10) };
+    }
+
+    // Something went wrong into the DB...
+    return null;
+  }
+};
+
 const Biflow = {
   URL: "https://mizar.unive.it",
   path: "/catalogo_biflow/api/public/api",
@@ -76,35 +316,21 @@ const Biflow = {
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
 
-    const ul = document.createElement("ul");
-    elm.appendChild(ul);
-
-    data.forEach(person => this.showPerson(ul, person, filter));
+    data.forEach(person => this.showPerson(elm, person, filter));
   },
 
-  showPerson(ul, person, filter) {
-    if (filter && person.name.toLowerCase().indexOf(filter) === -1) {
-      return;
+  showPerson(elm, person, filter) {
+    let results = [];
+
+    if (filter) {
+      results = SearchSettings.filterPerson(person, filter);
+      if (results.length === 0) {
+        return;
+      }
     }
 
-    const li = document.createElement('li');
-    ul.appendChild(li);
-
-    const div = document.createElement('div');
-    li.appendChild(div);
-
-    div.appendChild(document.createTextNode("Nome: "));
-
-    const anchor = document.createElement('a');
-    anchor.href = this.baseurl + "/person?id=" + person.id;
-    anchor.appendChild(document.createTextNode(person.name));
-    div.appendChild(anchor);
-
-    div.appendChild(document.createElement("br"));
-    div.appendChild(document.createTextNode(`
-      Numberi: ${person.works.length} schede,
-      ${person.translations.length} traduzioni,
-      ${person.codices.length} codici`));
+    const p = this.blockPerson(person, results);
+    elm.appendChild(p);
   },
 
   async showManuscripts(elmName, filter) {
@@ -115,32 +341,21 @@ const Biflow = {
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
 
-    const ul = document.createElement("ul");
-    elm.appendChild(ul);
-
-    data.forEach(manuscript => this.showManuscript(ul, manuscript, filter));
+    data.forEach(manuscript => this.showManuscript(elm, manuscript, filter));
   },
 
-  showManuscript(ul, manuscript, filter) {
-    if (filter && manuscript.code.toLowerCase().indexOf(filter) === -1) {
-      return;
+  showManuscript(elm, manuscript, filter) {
+    let results = [];
+
+    if (filter) {
+      results = SearchSettings.filterManuscript(manuscript, filter);
+      if (results.length === 0) {
+        return;
+      }
     }
 
-    const li = document.createElement('li');
-    ul.appendChild(li);
-
-    const div = document.createElement('div');
-    li.appendChild(div);
-
-    div.appendChild(document.createTextNode("Code: "));
-
-    const anchor = document.createElement('a');
-    anchor.href = this.baseurl + "/manuscript?id=" + manuscript.id;
-    anchor.appendChild(document.createTextNode(manuscript.shelfMark));
-    div.appendChild(anchor);
-
-    div.appendChild(document.createElement("br"));
-    div.appendChild(document.createTextNode("N. Versioni: " + manuscript.localisations.length));
+    const p = this.blockManuscript(manuscript, results);
+    elm.appendChild(p);
   },
 
   async showWorks(elmName, filter) {
@@ -151,35 +366,22 @@ const Biflow = {
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
 
-    const ul = document.createElement("ul");
-    elm.appendChild(ul);
-
     data.filter(work => work.published)
-        .forEach(work => this.showWork(ul, work, filter));
+        .forEach(work => this.showWork(elm, work, filter));
   },
 
-  showWork(ul, work, filter) {
-    if (filter && work.code.toLowerCase().indexOf(filter) === -1) {
-      return;
+  showWork(elm, work, filter) {
+    let results = [];
+
+    if (filter) {
+      results = SearchSettings.filterWork(work, filter);
+      if (results.length === 0) {
+        return;
+      }
     }
 
-    const li = document.createElement('li');
-    ul.appendChild(li);
-
-    const div = document.createElement('div');
-    li.appendChild(div);
-
-    div.appendChild(document.createTextNode("Code: "));
-
-    const anchor = document.createElement('a');
-    anchor.href = this.baseurl + "/work?id=" + work.id;
-    anchor.appendChild(document.createTextNode(work.code));
-    div.appendChild(anchor);
-
-    div.appendChild(document.createElement("br"));
-    const p = document.createElement('p');
-    div.appendChild(p);
-    p.innerHTML = work.content;
+    const b = this.blockWork(work, results);
+    elm.appendChild(b);
   },
 
   async showFullWork(id) {
@@ -699,92 +901,239 @@ const Biflow = {
     elm.textContent = textualTypology.textualTypology;
   },
 
+  blockWork(work, results) {
+    const div = document.createElement('div');
+    div.setAttribute('class', 'row');
+
+    const col = document.createElement('div');
+    col.setAttribute('class', 'col');
+    div.appendChild(col);
+
+    const card = document.createElement('div');
+    card.setAttribute('class', 'card');
+    col.appendChild(card);
+
+    const body = document.createElement('div');
+    body.setAttribute('class', 'card-body');
+    card.appendChild(body);
+
+    const title = document.createElement('h5');
+    body.appendChild(title);
+
+    title.appendChild(document.createTextNode("Scheda "));
+
+    const anchor = document.createElement('a');
+    anchor.href = this.baseurl + "/work?id=" + work.id;
+    anchor.appendChild(document.createTextNode(work.code));
+    title.appendChild(anchor);
+
+    if (results && results.length !== 0) {
+      results.filter(result => !!result.fieldName).forEach(result => {
+        const fieldName = document.createElement('div');
+        fieldName.setAttribute("class", "font-weight-bold");
+        body.appendChild(fieldName);
+        fieldName.innerText = result.fieldName;
+
+        const fieldValue = document.createElement('div');
+        body.appendChild(fieldValue);
+        fieldValue.innerHTML = result.fieldValue;
+      });
+    }
+
+    return div;
+  },
+
+  blockPerson(person, results) {
+    const div = document.createElement('div');
+    div.setAttribute('class', 'row');
+
+    const col = document.createElement('div');
+    col.setAttribute('class', 'col');
+    div.appendChild(col);
+
+    const card = document.createElement('div');
+    card.setAttribute('class', 'card');
+    col.appendChild(card);
+
+    const body = document.createElement('div');
+    body.setAttribute('class', 'card-body');
+    card.appendChild(body);
+
+    const title = document.createElement('h5');
+    body.appendChild(title);
+
+    const anchor = document.createElement('a');
+    anchor.href = this.baseurl + "/person?id=" + person.id;
+    anchor.appendChild(document.createTextNode(person.name));
+    title.appendChild(anchor);
+
+    body.appendChild(document.createTextNode(`
+      Numberi: ${person.works.length} schede,
+      ${person.translations.length} traduzioni,
+      ${person.codices.length} codici`));
+
+    if (results && results.length !== 0) {
+      results.filter(result => !!result.fieldName).forEach(result => {
+        const fieldName = document.createElement('div');
+        fieldName.setAttribute("class", "font-weight-bold");
+        body.appendChild(fieldName);
+        fieldName.innerText = result.fieldName;
+
+        const fieldValue = document.createElement('div');
+        body.appendChild(fieldValue);
+        fieldValue.innerHTML = result.fieldValue;
+      });
+    }
+    return div;
+  },
+
+  blockManuscript(manuscript, results) {
+    const div = document.createElement('div');
+    div.setAttribute('class', 'row');
+
+    const col = document.createElement('div');
+    col.setAttribute('class', 'col');
+    div.appendChild(col);
+
+    const card = document.createElement('div');
+    card.setAttribute('class', 'card');
+    col.appendChild(card);
+
+    const body = document.createElement('div');
+    body.setAttribute('class', 'card-body');
+    card.appendChild(body);
+
+    const title = document.createElement('h5');
+    body.appendChild(title);
+
+    title.appendChild(document.createTextNode("Manoscritto "));
+
+    const anchor = document.createElement('a');
+    anchor.href = this.baseurl + "/manuscript?id=" + manuscript.id;
+    anchor.appendChild(document.createTextNode(manuscript.shelfMark));
+    title.appendChild(anchor);
+
+    body.appendChild(document.createTextNode("N. Versioni: " + manuscript.localisations.length));
+
+    if (results && results.length !== 0) {
+      results.filter(result => !!result.fieldName).forEach(result => {
+        const fieldName = document.createElement('div');
+        fieldName.setAttribute("class", "font-weight-bold");
+        body.appendChild(fieldName);
+        fieldName.innerText = result.fieldName;
+
+        const fieldValue = document.createElement('div');
+        body.appendChild(fieldValue);
+        fieldValue.innerHTML = result.fieldValue;
+      });
+    }
+
+    return div;
+  },
+
+  blockExpression(expression, results) {
+    const div = document.createElement('div');
+    div.setAttribute('class', 'row');
+
+    const col = document.createElement('div');
+    col.setAttribute('class', 'col');
+    div.appendChild(col);
+
+    const card = document.createElement('div');
+    card.setAttribute('class', 'card');
+    col.appendChild(card);
+
+    const body = document.createElement('div');
+    body.setAttribute('class', 'card-body');
+    card.appendChild(body);
+
+    const title = document.createElement('h5');
+    body.appendChild(title);
+
+    title.appendChild(document.createTextNode("Espressione "));
+
+    const anchor = document.createElement('a');
+    anchor.href = this.baseurl + "/expression?id=" + expression.id;
+    anchor.appendChild(document.createTextNode(expression.code));
+    title.appendChild(anchor);
+
+    if (results && results.length !== 0) {
+      results.filter(result => !!result.fieldName).forEach(result => {
+        const fieldName = document.createElement('div');
+        fieldName.setAttribute("class", "font-weight-bold");
+        body.appendChild(fieldName);
+        fieldName.innerText = result.fieldName;
+
+        const fieldValue = document.createElement('div');
+        body.appendChild(fieldValue);
+        fieldValue.innerHTML = result.fieldValue;
+      });
+    }
+
+    return div;
+  },
+
   async search(search) {
     this.showLoader("resultsContainer");
 
-    const jsonLD = await fetch(this.URL + this.path + "/docs.jsonld").then(r => r.json());
-
-    const jsonLDWork = jsonLD["hydra:supportedClass"].find(o => o["@id"] === "#Work");
-    const jsonLDPerson = jsonLD["hydra:supportedClass"].find(o => o["@id"] === "#Person");
-    const jsonLDManuscript = jsonLD["hydra:supportedClass"].find(o => o["@id"] === "#Manuscript");
-
     search = search.toLowerCase();
 
-    const works = await this.searchJsonLD(jsonLDWork, "/works", search, work => {
-      const li = document.createElement("li");
-      li.appendChild(document.createTextNode("Scheda: "));
+    const people = await this.getData("/people").then(people => people.map(person => {
+      const results = SearchSettings.filterPerson(person, search);
+      if (results.length === 0) {
+        return null;
+      }
 
-      const anchor = document.createElement('a');
-      anchor.href = this.baseurl + "/work?id=" + work.id;
-      anchor.appendChild(document.createTextNode(work.code));
-      li.appendChild(anchor);
+      return {
+        elm: this.blockPerson(person, results),
+        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+      };
+    }).filter(elm => !!elm));
 
-      return li;
-    });
+    const works = await this.getData("/works").then(works => works.map(work => {
+      const results = SearchSettings.filterWork(work, search);
+      if (results.length === 0) {
+        return null;
+      }
 
-    const people = await this.searchJsonLD(jsonLDPerson, "/people", search, person => {
-      const li = document.createElement("li");
-      li.appendChild(document.createTextNode("Persona: "));
+      return {
+        elm: this.blockWork(work, results),
+        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+      };
+    }).filter(elm => !!elm));
 
-      const anchor = document.createElement('a');
-      anchor.href = this.baseurl + "/person?id=" + person.id;
-      anchor.appendChild(document.createTextNode(person.name));
-      li.appendChild(anchor);
-      return li;
-    });
+    const manuscripts = await this.getData("/manuscripts").then(manuscripts => manuscripts.map(manuscript => {
+      const results = SearchSettings.filterManuscript(manuscript, search);
+      if (results.length === 0) {
+        return null;
+      }
 
-    const manuscripts = await this.searchJsonLD(jsonLDManuscript, "/manuscripts", search, manuscript => {
-      const li = document.createElement("li");
-      li.appendChild(document.createTextNode("Manoscritto: "));
+      return {
+        elm: this.blockManuscript(manuscript, results),
+        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+      };
+    }).filter(elm => !!elm));
 
-      const anchor = document.createElement('a');
-      anchor.href = this.baseurl + "/manuscript?id=" + manuscript.id;
-      anchor.appendChild(document.createTextNode(manuscript.shelfMark));
-      li.appendChild(anchor);
-      return li;
-    });
+    const expressions = await this.getData("/expressions").then(expressions => expressions.map(expression => {
+      const results = SearchSettings.filterExpression(expression, search);
+      if (results.length === 0) {
+        return null;
+      }
 
-    document.getElementById("searchMainTitle").textContent = "Risultati: " + (works.length + people.length + manuscripts.length);
+      return {
+        elm: this.blockExpression(expression, results),
+        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+      };
+    }).filter(elm => !!elm));
 
     const elm = document.getElementById("resultsContainer");
     this.removeContent(elm);
 
-    const ul = document.createElement("ul");
-    elm.appendChild(ul);
+    const results = people.concat(works).concat(manuscripts).concat(expressions);
+    results.sort((a, b) => a.priority > b.priority);
 
-    works.forEach(work => ul.appendChild(work));
-    people.forEach(person => ul.appendChild(person));
-    manuscripts.forEach(manuscript => ul.appendChild(manuscript));
-  },
+    document.getElementById("searchMainTitle").textContent = "Risultati: " + results.length;
 
-  async searchJsonLD(obj, path, search, cb) {
-    if (!search) {
-      return [];
-    }
-
-    const array = await this.getData(path);
-    const selectedObjs = [];
-
-    obj["hydra:supportedProperty"].forEach(property => {
-      property = property["hydra:property"];
-      if (property["range"].startsWith("#")) {
-        return;
-      }
-
-      const label = property["rdfs:label"];
-      array.forEach(obj => {
-        if (obj[label] && ("" + obj[label]).toLowerCase().indexOf(search) != -1 &&
-            !selectedObjs.includes(obj)) {
-          selectedObjs.push(obj);
-        }
-      });
-    });
-
-    const results = [];
-    selectedObjs.forEach(obj => {
-      results.push(cb(obj));
-    });
-
-    return results;
+    results.forEach(result => elm.appendChild(result.elm));
   },
 };

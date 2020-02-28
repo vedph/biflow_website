@@ -17,7 +17,7 @@ layout: page
           <form action="{{ site.baseurl }}/search" method="GET">
             <div class="form-row">
               <div class="col-md-10">
-                <input type="text" class="form-control" name="search" placeholder="...">
+                <input type="text" class="form-control" name="search" id="search" placeholder="…">
               </div>
               <div class="col-md-2">
                 <button class="btn btn-primary btn-block" type="submit">ricerca</button>
@@ -31,13 +31,14 @@ layout: page
 
   <h2>Risultati</h2>
 
-  <div class="row" id="resultsContainer"></div>
+  <div class="container" id="resultsContainer"></div>
 
 </div>
 
 <script type="text/javascript">
 
 const search = new URLSearchParams(location.search).get("search");
+document.getElementById("search").value = search;
 Biflow.search(search);
 
 </script>
