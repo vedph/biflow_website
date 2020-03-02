@@ -242,6 +242,8 @@ const Biflow = {
   URL: "https://mizar.unive.it",
   path: "/catalogo_biflow/api/public/api",
 
+  itemsPerPage: 10,
+
   cachedFetchedURLs: new Map(),
 
   updateCounters() {
@@ -321,76 +323,92 @@ const Biflow = {
   async showPeople(elmName, filter) {
     this.showLoader(elmName);
 
-    const data = await this.getData("/people");
+    let data = await this.getData("/people");
+    data = data.map(person => {
+      let results = [];
+      if (filter) {
+        results = SearchSettings.filterPerson(person, filter);
+      }
+
+      return { person, results, }
+    });
+
+    if (filter) {
+      data = data.filter(person => person.results.length !== 0);
+    }
 
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
 
-    data.forEach(person => this.showPerson(elm, person, filter));
+    const pageData = this.reducePagination(data);
+    pageData.data.forEach(data => this.showPerson(elm, data));
+    this.showPagination(pageData);
   },
 
-  showPerson(elm, person, filter) {
-    let results = [];
-
-    if (filter) {
-      results = SearchSettings.filterPerson(person, filter);
-      if (results.length === 0) {
-        return;
-      }
-    }
-
-    const p = this.blockPerson(person, results);
+  showPerson(elm, data) {
+    const p = this.blockPerson(data.person, data.results);
     elm.appendChild(p);
   },
 
   async showManuscripts(elmName, filter) {
     this.showLoader(elmName);
 
-    const data = await this.getData("/manuscripts");
+    let data = await this.getData("/manuscripts");
+    data = data.map(manuscript => {
+      let results = [];
+      if (filter) {
+        results = SearchSettings.filterManuscript(manuscript, filter);
+      }
+
+      return { manuscript, results, }
+    });
+
+    if (filter) {
+      data = data.filter(manuscript => manuscript.results.length !== 0);
+    }
 
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
 
-    data.forEach(manuscript => this.showManuscript(elm, manuscript, filter));
+    const pageData = this.reducePagination(data);
+    pageData.data.forEach(manuscript => this.showManuscript(elm, manuscript));
+    this.showPagination(pageData);
   },
 
-  showManuscript(elm, manuscript, filter) {
-    let results = [];
-
-    if (filter) {
-      results = SearchSettings.filterManuscript(manuscript, filter);
-      if (results.length === 0) {
-        return;
-      }
-    }
-
-    const p = this.blockManuscript(manuscript, results);
+  showManuscript(elm, manuscript) {
+    const p = this.blockManuscript(manuscript.manuscript, manuscript.results);
     elm.appendChild(p);
   },
 
   async showWorks(elmName, filter) {
     this.showLoader(elmName);
 
-    const data = await this.getData("/works");
+    let data = await this.getData("/works");
+    data = data.filter(work => work.published);
+
+    data = data.map(work => {
+      let results = [];
+      if (filter) {
+        results = SearchSettings.filterWork(work, filter);
+      }
+
+      return { work, results, }
+    });
+
+    if (filter) {
+      data = data.filter(work => work.results.length !== 0);
+    }
 
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
 
-    data.filter(work => work.published)
-        .forEach(work => this.showWork(elm, work, filter));
+    const pageData = this.reducePagination(data);
+    pageData.data.forEach(work => this.showWork(elm, work));
+    this.showPagination(pageData);
   },
 
-  showWork(elm, work, filter) {
-    let results = [];
-
-    if (filter) {
-      results = SearchSettings.filterWork(work, filter);
-      if (results.length === 0) {
-        return;
-      }
-    }
-
-    const b = this.blockWork(work, results);
+  showWork(elm, work) {
+    const b = this.blockWork(work.work, work.results);
     elm.appendChild(b);
   },
 
@@ -1144,6 +1162,64 @@ const Biflow = {
 
     document.getElementById("searchMainTitle").textContent = "Risultati: " + results.length;
 
-    results.forEach(result => elm.appendChild(result.elm));
+    const pageData = this.reducePagination(results);
+    pageData.data.forEach(result => elm.appendChild(result.elm));
+    this.showPagination(pageData);
+  },
+
+  reducePagination(data) {
+    const totalPages = Math.ceil(data.length / this.itemsPerPage);
+
+    const url = new URL(window.location);
+    let currentPage = parseInt(url.searchParams.get("page"), 10) || 0;
+
+    let fromItem = currentPage * this.itemsPerPage;
+    if (fromItem >= data.length) {
+      fromItem = 0;
+      currentPage = 0;
+    }
+
+    return {
+      data: data.splice(fromItem, this.itemsPerPage),
+      currentPage: currentPage,
+      totalPages: totalPages,
+    }
+  },
+
+  showPagination(data) {
+    const pagination = document.getElementById("pagination");
+    this.removeContent(pagination);
+
+    const url = new URL(window.location);
+
+    function createElement(content, page) {
+      const li = document.createElement("li");
+      li.setAttribute("class", "page-item " + (page === data.currentPage ? "active" : ""));
+      pagination.appendChild(li);
+
+      const a = document.createElement("a");
+      a.setAttribute("class", "page-link");
+      li.appendChild(a);
+
+      url.searchParams.set("page", page);
+
+      a.href = url;
+      a.textContent = content;
+    }
+
+    let min = Math.max(data.currentPage - 5 - (data.currentPage > data.totalPages - 5 ? 5 - (data.totalPages - data.currentPage) : 0), 0);
+    let max = Math.min(data.currentPage + 5 + (data.currentPage < 5 ? 5 - data.currentPage : 0), data.totalPages - 1);
+
+    if (data.currentPage > 0) {
+      createElement("Precedente", data.currentPage - 1);
+    }
+
+    for (let i = min; i <= max; ++i) {
+      createElement(i + 1, i);
+    }
+
+    if (data.currentPage < data.totalPages - 1) {
+      createElement("Successivo", data.currentPage + 1);
+    }
   },
 };
