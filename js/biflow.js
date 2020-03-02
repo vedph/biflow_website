@@ -242,6 +242,8 @@ const Biflow = {
   URL: "https://mizar.unive.it",
   path: "/catalogo_biflow/api/public/api",
 
+  cachedFetchedURLs: new Map(),
+
   updateCounters() {
     this.updateCounter("counter-works", "/works",
       work => work.published);
@@ -270,11 +272,19 @@ const Biflow = {
   },
 
   async getDataWithFullPath(path) {
+    // Let's see if we have this path in the cache.
+    if (this.cachedFetchedURLs.has(path)) {
+      return this.cachedFetchedURLs.get(path);
+    }
+
     const headers = new Headers();
     headers.append("Accept", "application/json");
 
     const resp = await fetch(this.URL + path, { headers });
     const json = await resp.json();
+
+    // Let's store it in the cache.
+    this.cachedFetchedURLs.set(path, json);
     return json;
   },
 
