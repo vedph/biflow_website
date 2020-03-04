@@ -1,8 +1,8 @@
-title: BiFlow Catalogue
+title: Il Catalogo BIFLOW - Toscana bilingue
 baseurl: "/biflow_website" # the subpath of your site, e.g. /blog
 url: "https://tmancinelli.github.io/biflow_website"
 description: something..
-email: foo@bar.it
+emails: [antonio.montefusco@unive.it, sara.bischetti@unive.it, tiziana.mancinelli@unive.it]
 
 # Build settings
 markdown: kramdown

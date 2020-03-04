@@ -3,9 +3,13 @@
 		<div class="container">
 			<div class="row">
                 <div class="col-md-6">
-                    <h2>Contattaci</h2>
+                    <h2>Contatti</h2>
                     <p class="bodytext">
-                    	<b><span class="glyphicon glyphicon-envelope grey"></span>&nbsp;<a href="mailto:{{site.email}}">{{site.email}}</a></b>
+                          {% for email in site.emails %}
+                        <b><span class="glyphicon glyphicon-envelope grey"></span>
+                           <a href="mailto:{{email}}">{{email}}</a>
+                        </b><br/>
+                          {% endfor %}
                     </p>
 					<div class="w-100 divider-invisibile" ></div>
               	</div>
