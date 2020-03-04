@@ -353,6 +353,8 @@ const Biflow = {
   async showManuscripts(elmName, filter) {
     this.showLoader(elmName);
 
+    let libraries = await this.getData("/libraries");
+
     let data = await this.getData("/manuscripts");
     data = data.map(manuscript => {
       let results = [];
@@ -371,12 +373,12 @@ const Biflow = {
     this.removeContent(elm);
 
     const pageData = this.reducePagination(data);
-    pageData.data.forEach(manuscript => this.showManuscript(elm, manuscript));
+    pageData.data.forEach(manuscript => this.showManuscript(elm, manuscript, libraries));
     this.showPagination(pageData);
   },
 
-  showManuscript(elm, manuscript) {
-    const p = this.blockManuscript(manuscript.manuscript, manuscript.results);
+  showManuscript(elm, manuscript, libraries) {
+    const p = this.blockManuscript(manuscript.manuscript, manuscript.results, libraries);
     elm.appendChild(p);
   },
 
@@ -1015,7 +1017,7 @@ const Biflow = {
     return div;
   },
 
-  blockManuscript(manuscript, results) {
+  blockManuscript(manuscript, results, libraries) {
     const div = document.createElement('div');
     div.setAttribute('class', 'row');
 
@@ -1034,14 +1036,16 @@ const Biflow = {
     const title = document.createElement('h5');
     body.appendChild(title);
 
-    title.appendChild(document.createTextNode("Manoscritto "));
+    const libraryId = parseInt(manuscript.library.substr(manuscript.library.lastIndexOf("/") + 1), 10);
 
+    const library = libraries.find(library => library.id === libraryId);
+    let name = library.libraryName + "¸ " + manuscript.shelfMark;
+    
     const anchor = document.createElement('a');
     anchor.href = this.baseurl + "/manuscript?id=" + manuscript.id;
-    anchor.appendChild(document.createTextNode(manuscript.shelfMark));
+    anchor.appendChild(document.createTextNode(name));
     title.appendChild(anchor);
-
-    body.appendChild(document.createTextNode("N. Versioni: " + manuscript.localisations.length));
+    console.log(manuscript)
 
     if (results && results.length !== 0) {
       results.filter(result => !!result.fieldName).forEach(result => {
@@ -1130,6 +1134,9 @@ const Biflow = {
       };
     }).filter(elm => !!elm));
 
+    // Let's fetch the libraries for the manuscript blocks.
+    const libraries = await this.getData("/libraries");
+
     const manuscripts = await this.getData("/manuscripts").then(manuscripts => manuscripts.map(manuscript => {
       const results = SearchSettings.filterManuscript(manuscript, search);
       if (results.length === 0) {
@@ -1137,7 +1144,7 @@ const Biflow = {
       }
 
       return {
-        elm: this.blockManuscript(manuscript, results),
+        elm: this.blockManuscript(manuscript, results, libraries),
         priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
       };
     }).filter(elm => !!elm));
