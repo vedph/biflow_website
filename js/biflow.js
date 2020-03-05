@@ -454,63 +454,60 @@ const Biflow = {
       const workDiagram = document.getElementById("workDiagram");
 
       // Diagram.
-      topLevelExpressions.forEach(expression => {
-        const ul = document.createElement("ul");
-        ul.setAttribute("class", "list-espressione");
-        workDiagram.appendChild(ul);
 
-        const li = document.createElement("li");
-        li.textContent = expression.title;
-        ul.appendChild(li);
+      topLevelExpressions.forEach(e => {
+        const createDiagram = e => {
+          const node = {
+            text: {
+              code: {
+                val: e.code,
+                href: this.baseurl + "/expression?id=" + e.id,
+              },
+              title: e.title,
+            },
+            children: [],
+            stackChildren: true,
+          };
 
-        // This function creates a list of derived expressions.
-        function appendDerivedExpressionOf(li, expression) {
-          // Let's create a list of the derived expression.
-          const list = [];
-          expressions.forEach(e => {
-            // This expression is the top-level. Ignore it.
-            if (e.derivedFromExpressions.length === 0) {
-              return;
+          e.derivedExpressions.forEach(de => {
+            const id = parseInt(de.substr(de.lastIndexOf("/") +1), 10);
+            de = expressions.find(ee => ee.id === id);
+            if (de) {
+              node.children.push(createDiagram(de));
             }
+          });
+          return node;
+        };
 
-            // TODO What about if we have more than 1?
-            const id = parseInt(e.derivedFromExpressions[0].substr(e.derivedFromExpressions[0].lastIndexOf("/") + 1), 10);
+        const div = document.createElement("div");
+        document.getElementById("workDiagram").appendChild(div);
+        div.id = "expression_" + e.id;
 
-            // This expression doesn't belong to our expression. Ignore it.
-            if (id != expression.id) {
-              return;
+        const nodeStructure = createDiagram(e);
+        const charts = new Treant({
+          chart: {
+            container: "#expression_" + e.id,
+            levelSeparation:    25,
+            siblingSeparation:  70,
+            subTeeSeparation:   70,
+            padding: 35,
+            node: { HTMLclass: "diagram" },
+            connectors: {
+              type: "curve",
+              style: {
+                "stroke-width": 2,
+                "stroke-linecap": "round",
+                "stroke": "#ccc"
+              }
             }
-
-            list.push(e);
-          });
-
-          // No derived expressions.
-          if (list.length === 0) {
-            return;
-          }
-
-          const ul = document.createElement("ul");
-          li.appendChild(ul);
-
-          // For each derived expression, let's create a "li" element and run recursively.
-          list.forEach(e => {
-            const subLi = document.createElement("li");
-            ul.appendChild(subLi);
-
-            const anchor = document.createElement("a");
-            anchor.href = Biflow.baseurl + "/expression?id=" + e.id;
-            anchor.textContent = e.title;
-            subLi.appendChild(anchor);
-
-            // Recursively...
-            appendDerivedExpressionOf(subLi, e);
-          });
-        }
-
-        appendDerivedExpressionOf(li, expression);
+          },
+          nodeStructure
+        });
       });
     });
   },
+
+// End diagram
 
   async showExpressions(list, elmName, cb = null) {
     const expressions = [];
