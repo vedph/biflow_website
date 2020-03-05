@@ -295,13 +295,16 @@ const Biflow = {
   },
 
   showLoader(elmName) {
+    const elm = document.getElementById(elmName);
+    this.showLoaderInElement(elm);
+  },
+
+  showLoaderInElement(elm) {
     const div = document.createElement('div');
     div.setAttribute("class", "lds-circle");
     div.appendChild(document.createElement('div'));
 
-    const elm = document.getElementById(elmName);
     this.removeContent(elm);
-
     elm.appendChild(div);
   },
 
@@ -446,7 +449,7 @@ const Biflow = {
         }
       });
 
-      document.getElementById("workTitle").textContent = topLevelExpressions.map(e => e.title).join(", ");
+      document.getElementById("workTitle").textContent = this.dedupArray(topLevelExpressions.map(e => e.title)).join(", ");
 
       const workDiagram = document.getElementById("workDiagram");
 
@@ -950,12 +953,19 @@ const Biflow = {
     const title = document.createElement('h5');
     body.appendChild(title);
 
-    title.appendChild(document.createTextNode("Scheda "));
-
     const anchor = document.createElement('a');
     anchor.href = this.baseurl + "/work?id=" + work.id;
     anchor.appendChild(document.createTextNode(work.code));
     title.appendChild(anchor);
+
+    const subTitle = document.createElement("div");
+    body.appendChild(subTitle);
+
+    const subTitleContent = document.createElement("span");
+    this.showLoaderInElement(subTitleContent);
+    subTitle.appendChild(subTitleContent);
+
+    this.blockWorkTitle(work, subTitleContent);
 
     if (results && results.length !== 0) {
       results.filter(result => !!result.fieldName).forEach(result => {
@@ -1039,8 +1049,8 @@ const Biflow = {
     const libraryId = parseInt(manuscript.library.substr(manuscript.library.lastIndexOf("/") + 1), 10);
 
     const library = libraries.find(library => library.id === libraryId);
-    let name = library.libraryName + "¸ " + manuscript.shelfMark;
-    
+    let name = library.libraryName + "¸ " + library.city + ", " + manuscript.shelfMark;
+
     const anchor = document.createElement('a');
     anchor.href = this.baseurl + "/manuscript?id=" + manuscript.id;
     anchor.appendChild(document.createTextNode(name));
@@ -1103,6 +1113,28 @@ const Biflow = {
     }
 
     return div;
+  },
+
+  async blockWorkTitle(work, elm) {
+    const author = await this.getDataWithFullPath(work.author);
+
+    const promises = [];
+    for (let i = 0; i < work.expressions.length; ++i) {
+      const p = this.getDataWithFullPath(work.expressions[i]);
+      promises.push(p);
+    }
+
+    const expressions = await Promise.all(promises);
+    console.log(expressions);
+
+    const topLevelExpressions = [];
+    expressions.forEach(expression => {
+      if (expression.derivedFromExpressions.length === 0) {
+        topLevelExpressions.push(expression);
+      }
+    });
+
+    elm.textContent = author.name + ", " + this.dedupArray(topLevelExpressions.map(e => e.title)).join(", ");
   },
 
   async search(search) {
@@ -1229,4 +1261,17 @@ const Biflow = {
       createElement("Successivo", data.currentPage + 1);
     }
   },
+
+  // Remove duplicates from an array of strings.
+  dedupArray(array) {
+    const results = [];
+
+    array.forEach(elm => {
+      if (!results.includes(elm)) {
+        results.push(elm);
+      }
+    });
+
+    return results;
+  }
 };
