@@ -435,6 +435,7 @@ const Biflow = {
     const downloadAnchor = document.getElementById("workCodeDownload");
     downloadAnchor.textContent = data.code;
     downloadAnchor.title = data.code;
+    downloadAnchor.href = "worktoprint.html?id=" + data.id;
 
     // The complex ones.
     this.showWorkAuthor(data);
@@ -451,7 +452,6 @@ const Biflow = {
 
       document.getElementById("workTitle").textContent = this.dedupArray(topLevelExpressions.map(e => e.title)).join(", ");
 
-      const workDiagram = document.getElementById("workDiagram");
 
       // Diagram.
 
@@ -581,10 +581,8 @@ const Biflow = {
     const attributions = [];
     for (let i = 0; i < data.attributions.length; ++i) {
       // This is the work-attribution.
-      const workAttributionData = await this.getDataWithFullPath(data.attributions[i]);
-      // This is the attribution.
-      const attributionData = await this.getDataWithFullPath(workAttributionData.attribution);
-      attributions.push(attributionData.attribution);
+      const attributionData = await this.getDataWithFullPath(data.attributions[i]);
+      attributions.push(attributionData);
     }
 
     const elm = document.getElementById("workAttributions");
