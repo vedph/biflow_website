@@ -1,0 +1,10 @@
+body {
+	text-align: justify;
+	margin: 5em;
+}
+
+@media print {
+  body {
+  	margin: 1em;
+  }
+}
