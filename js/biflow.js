@@ -1268,5 +1268,15 @@ const Biflow = {
     });
 
     return results;
+  },
+
+  preloadData(data) {
+    for (let key in data) {
+      this.cachedFetchedURLs.set(key, data[key]);
+    }
   }
 };
+
+(function(exports){
+  exports.Biflow = Biflow;
+})(typeof exports === 'undefined'? this['mymodule']={}: exports);
