@@ -452,58 +452,24 @@ const Biflow = {
 
       document.getElementById("workTitle").textContent = this.dedupArray(topLevelExpressions.map(e => e.title)).join(", ");
 
-
       // Diagram.
-
-      topLevelExpressions.forEach(e => {
-        const createDiagram = e => {
-          const node = {
-            text: {
-              code: {
-                val: e.code,
-                href: this.baseurl + "/expression?id=" + e.id,
-              },
-              title: e.title,
-            },
-            children: [],
-            stackChildren: true,
-          };
-
-          e.derivedExpressions.forEach(de => {
-            const id = parseInt(de.substr(de.lastIndexOf("/") +1), 10);
-            de = expressions.find(ee => ee.id === id);
-            if (de) {
-              node.children.push(createDiagram(de));
-            }
-          });
-          return node;
-        };
-
-        const div = document.createElement("div");
-        document.getElementById("workDiagram").appendChild(div);
-        div.id = "expression_" + e.id;
-
-        const nodeStructure = createDiagram(e);
-        const charts = new Treant({
-          chart: {
-            container: "#expression_" + e.id,
-            levelSeparation:    25,
-            siblingSeparation:  70,
-            subTeeSeparation:   70,
-            padding: 35,
-            node: { HTMLclass: "diagram" },
-            connectors: {
-              type: "curve",
-              style: {
-                "stroke-width": 2,
-                "stroke-linecap": "round",
-                "stroke": "#ccc"
-              }
-            }
-          },
-          nodeStructure
+      const dots = [];
+      dots.push("graph {");
+      dots.push("rankdir=LR;");
+      expressions.forEach(e => {
+        e.derivedFromExpressions.forEach(de => {
+          const id = parseInt(de.substr(de.lastIndexOf("/") +1), 10);
+          de = expressions.find(ee => ee.id === id);
+          dots.push(`"${de.code}" -- "${e.code}";`);
         });
       });
+      dots.push("}");
+
+      const img = document.createElement("img");
+      document.getElementById("workDiagram").appendChild(img);
+      const url = new URL("https://image-charts.com/chart?chs=700x200&cht=gv");
+      url.searchParams.set("chl", dots.join(""));
+      img.src = url.href;
     });
   },
 

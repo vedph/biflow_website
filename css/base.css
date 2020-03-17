@@ -103,3 +103,7 @@ div.grigio_ar .divider-invisibile-doppio{
   font-size: 0.8em;
   max-width: 250px;
 }
+
+#workDiagram {
+  text-align: center;
+}
