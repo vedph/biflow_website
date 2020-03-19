@@ -9,6 +9,6 @@ body {
   }
 }
 
-li > span > p {
+p {
   display: inline;
 }

@@ -1,20 +1,6 @@
 function maybeAddBlock(df, title, content) {
   if (content != "") {
     const contentLabel = document.createElement("strong");
-    contentLabel.textContent = title;
-    df.appendChild(contentLabel);
-    df.appendChild(document.createElement("br"));
-
-    const contentValue = document.createElement("span");
-    contentValue.innerHTML = content;
-    df.appendChild(contentValue);
-    df.appendChild(document.createElement("br"));
-  }
-}
-
-function maybeAddLine(df, title, content) {
-  if (content != "") {
-    const contentLabel = document.createElement("strong");
     contentLabel.textContent = title + " ";
     df.appendChild(contentLabel);
 
@@ -140,27 +126,27 @@ async function addExpressionItem(df, expression) {
 
   if (expression.translator) {
     const translator = await getPersonString(expression.translator);
-    maybeAddLine(df, "Traduttore:", translator);
+    maybeAddBlock(df, "Traduttore:", translator);
   }
 
   maybeAddAttributions(df, expression.attributions);
 
-  maybeAddLine(df, "Titolo:", expression.title);
+  maybeAddBlock(df, "Titolo:", expression.title);
   maybeAddBlock(df, "Incipt:", expression.incipit);
   maybeAddBlock(df, "Explicit:", expression.explicit);
-  maybeAddLine(df, "Datazione:", expression.date);
+  maybeAddBlock(df, "Datazione:", expression.date);
   maybeAddBlock(df, "Storia editoriale:", expression.editionHistory);
   maybeAddBlock(df, "Tradizione manoscritta:", expression.editionHistory);
   maybeAddBlock(df, "Storia testuale:", expression.textualHistory);
 
   if (expression.language) {
     const language = await Biflow.getDataWithFullPath(expression.language);
-    maybeAddLine(df, "Lingua:", language.language);
+    maybeAddBlock(df, "Lingua:", language.language);
   }
 
   if (expression.textualTypology) {
     const textualTypology = await Biflow.getDataWithFullPath(expression.textualTypology);
-    maybeAddLine(df, "Tipologia testuale:", textualTypology.textualTypology);
+    maybeAddBlock(df, "Tipologia testuale:", textualTypology.textualTypology);
   }
 
   await addLocalisationItems(df, expression.localisations);
@@ -248,11 +234,11 @@ async function generateDocument(workId) {
 
   if (work.editor) {
     const editor = await Biflow.getDataWithFullPath(work.editor);
-    maybeAddLine(df, "Autore scheda:", editor.editor);
+    maybeAddBlock(df, "Autore scheda:", editor.editor);
   }
 
   const author = await getPersonString(work.author);
-  maybeAddLine(df, "Autore:", author);
+  maybeAddBlock(df, "Autore:", author);
 
   maybeAddAttributions(df, work.attributions);
 
@@ -261,7 +247,7 @@ async function generateDocument(workId) {
   maybeAddBlock(df, "Lavori collegati:", work.relatedWorks);
 
   const genres = await getGenresString(work.genres);
-  maybeAddLine(df, "Genere:", genres);
+  maybeAddBlock(df, "Genere:", genres);
 
   await addExpressionItems(df, work.expressions);
 

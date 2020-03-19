@@ -587,9 +587,11 @@ const Biflow = {
     ["manuscriptLocalisations", ].forEach(elmName => this.showLoaderInUL(elmName));
 
     const data = await this.getData("/manuscripts/" + id);
+    const library = await this.getDataWithFullPath(data.library);
+
 
     // The simple elements.
-    document.getElementById("manuscriptMainTitle").textContent = "Manoscritto: " + data.shelfMark;
+    document.getElementById("manuscriptMainTitle").textContent = library.libraryCode + ", " + data.shelfMark;
     document.getElementById("manuscriptDate").textContent = data.date;
     document.getElementById("manuscriptShelfMark").textContent = data.shelfMark;
     document.getElementById("manuscriptHeight").textContent = data.height;
