@@ -8,3 +8,7 @@ body {
   	margin: 1em;
   }
 }
+
+li > span > p {
+  display: inline;
+}
