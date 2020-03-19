@@ -426,7 +426,7 @@ const Biflow = {
     const data = await this.getData("/works/" + id);
 
     // The simple elements.
-    document.getElementById("workMainTitle").textContent = "Scheda opera: " + data.code;
+    document.getElementById("workMainTitle").textContent = data.code;
     document.getElementById("workCode").textContent = data.code;
     document.getElementById("workContent").innerHTML = data.content;
     document.getElementById("workOtherTranslations").innerHTML = data.otherTranslations;
@@ -671,7 +671,7 @@ const Biflow = {
     const data = await this.getData("/people/" + id);
 
     // The simple elements.
-    document.getElementById("personMainTitle").textContent = "Scheda persona: " + data.name;
+    document.getElementById("personMainTitle").textContent = data.name;
     document.getElementById("personName").textContent = data.name;
     document.getElementById("personBirthDate").textContent = data.dateBirth;
     document.getElementById("personDeathDate").textContent = data.dateDeath;
@@ -805,7 +805,7 @@ const Biflow = {
     const data = await this.getData("/expressions/" + id);
 
     // The simple elements.
-    document.getElementById("expressionMainTitle").textContent = "Versione: " + data.code;
+    document.getElementById("expressionMainTitle").textContent = data.code;
     document.getElementById("expressionCode").textContent = data.code;
     document.getElementById("expressionDate").textContent = data.date;
     document.getElementById("expressionTitle").textContent = data.title;
