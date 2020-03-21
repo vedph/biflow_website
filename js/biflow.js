@@ -723,7 +723,6 @@ const Biflow = {
       div.appendChild(document.createElement("br"));
 
       if (localisation.manuscript) {
-        div.appendChild(document.createTextNode("Manoscritto: "));
         let anchor = document.createElement('a');
         anchor.href = this.baseurl + "/manuscript?id=" + localisation.manuscript.id;
         anchor.appendChild(document.createTextNode(localisation.manuscript.shelfMark));
@@ -732,7 +731,7 @@ const Biflow = {
       }
 
       if (localisation.expression) {
-        div.appendChild(document.createTextNode("Expressione: "));
+        div.appendChild(document.createTextNode("Testo: "));
         let anchor = document.createElement('a');
         anchor.href = this.baseurl + "/expression?id=" + localisation.expression.id;
         anchor.appendChild(document.createTextNode(localisation.expression.title));

@@ -171,7 +171,7 @@ async function addLocalisationItems(df, localisations) {
 
     const library = await Biflow.getDataWithFullPath(manuscript.library);
 
-    let value = `${library.city}, ${library.libraryName}, ${manuscript.shelfMark}  = ${library.libraryCode} ${manuscript.shelfMark}`;
+    let value = `${library.libraryCode} ${manuscript.shelfMark}  = ${library.city}, ${library.libraryName}, ${manuscript.shelfMark}`;
     li.appendChild(document.createTextNode(value));
     li.appendChild(document.createElement("br"));
     li.appendChild(document.createTextNode(`Datazione: ${manuscript.date}`));
