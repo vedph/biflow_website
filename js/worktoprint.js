@@ -225,12 +225,22 @@ function addTitle(df, code) {
   df.appendChild(elm);
 }
 
+function addButton(df) {
+  const button = document.createElement("button");
+  button.textContent = "Stampa";
+  df.appendChild(button);
+  button.onclick = () => window.print();
+}
+
+
 async function generateDocument(workId) {
   const df = new DocumentFragment();
 
   const work = await Biflow.getData("/works/" + workId);
 
   addTitle(df, work.code);
+
+  addButton(df);
 
   if (work.editor) {
     const editor = await Biflow.getDataWithFullPath(work.editor);
