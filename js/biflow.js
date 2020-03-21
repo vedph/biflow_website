@@ -420,7 +420,7 @@ const Biflow = {
   async showFullWork(id) {
     // Let's show the loading for any active part of the page.
     ["workCode", "workCodeDownload", "workTitle", "workGenres", "workContent", "workOtherTranslations",
-     "workAuthor", "workRelatedWorks", "workEditor"].forEach(elmName => this.showLoader(elmName));
+     "workAuthor", "workRelatedWorks", "workEditor", "workBibliographies", "workQuote"].forEach(elmName => this.showLoader(elmName));
     ["workAttributions", "workExpressions"].forEach(elmName => this.showLoaderInUL(elmName));
 
     const data = await this.getData("/works/" + id);
@@ -442,6 +442,8 @@ const Biflow = {
     this.showWorkAttributions(data);
     this.showWorkGenres(data);
     this.showWorkEditor(data);
+    this.showWorkBibliographies(data);
+    this.showWorkQuote(data);
     this.showExpressions(data.expressions, "workExpressions", expressions => {
       const topLevelExpressions = [];
       expressions.forEach(expression => {
@@ -520,6 +522,84 @@ const Biflow = {
     const elm = document.getElementById("workEditor");
     elm.textContent = editor.editor;
   },
+
+  async showWorkQuote(data) {
+    const quote = [];
+    const editor = await this.getDataWithFullPath(data.editor);
+    quote.push(editor.editor);
+    quote.push("<em>"+data.code+"</em>");
+    quote.push("in <em>Toscana Bilingue</em> - Catalogo Biflow, Venezia, ECF,  pubblicato il " + data.creationDate)
+    const elm = document.getElementById("workQuote")
+    elm.innerHTML = quote.join(", ");
+  },
+
+  async showWorkBibliographies(data) {
+    const df = new DocumentFragment();
+    await this.addBibliographyItems(df, data.bibliographies);
+    const elm = document.getElementById("workBibliographies");
+    this.removeContent(elm);
+    elm.appendChild(df);
+  },
+  // Bibliographies
+  async addBibliographyItems(df, bibliographies) {
+    df.appendChild(document.createElement("br"));
+
+    const ul = document.createElement("ul");
+    df.appendChild(ul);
+
+    for (let i = 0; i < bibliographies.length; ++i) {
+      const bibliography = await Biflow.getDataWithFullPath(bibliographies[i]);
+
+      let value = bibliography.codeBibl + " = " +
+                  bibliography.author + ", " +
+                  bibliography.title;
+
+      if (bibliography.chapter) {
+        value += ", in " + bibliography.chapter;
+      }
+
+      if (bibliography.journal) {
+        value += ", in " + bibliography.journal + ", " + bibliography.journalNumber;
+
+        if (bibliography.date) {
+          value += " (" + bibliography.date + ")";
+        }
+      }
+
+      if (bibliography.editor) {
+        value += ", a cura di " + bibliography.editor;
+      }
+
+      if (bibliography.place && bibliography.publisher) {
+        value += ", " + bibliography.place + ", " + bibliography.publisher;
+
+        if (bibliography.date) {
+          value += " (" + bibliography.date + ")";
+        }
+      }
+
+      if (bibliography.volume) {
+        value += ", " + bibliography.volume;
+
+        if (bibliography.volumeNumber) {
+          value += " - " + bibliography.volumeNumber;
+        }
+      }
+
+      if (bibliography.pageNumber) {
+        value += ", " + bibliography.pageNumber;
+      }
+
+      if (bibliography.url) {
+        value += ", " + bibliography.url;
+      }
+
+      const li = document.createElement("li");
+      li.textContent = value;
+      ul.appendChild(li);
+    }
+  },
+  //end Bibliographies's function
 
   async showWorkAuthor(data) {
     const author = await this.getDataWithFullPath(data.author);

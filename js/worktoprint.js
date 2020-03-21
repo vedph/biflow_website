@@ -56,61 +56,7 @@ async function addBibliographyItems(df, bibliographies) {
   bibliographyLabel.textContent = "Bibliografia:";
   df.appendChild(bibliographyLabel);
   df.appendChild(document.createElement("br"));
-
-  const ul = document.createElement("ul");
-  df.appendChild(ul);
-
-  for (let i = 0; i < bibliographies.length; ++i) {
-    const bibliography = await Biflow.getDataWithFullPath(bibliographies[i]);
-
-    let value = bibliography.codeBibl + " = " +
-                bibliography.author + ", " +
-                bibliography.title;
-
-    if (bibliography.chapter) {
-      value += ", in " + bibliography.chapter;
-    }
-
-    if (bibliography.journal) {
-      value += ", in " + bibliography.journal + ", " + bibliography.journalNumber;
-
-      if (bibliography.date) {
-        value += " (" + bibliography.date + ")";
-      }
-    }
-
-    if (bibliography.editor) {
-      value += ", a cura di " + bibliography.editor;
-    }
-
-    if (bibliography.place && bibliography.publisher) {
-      value += ", " + bibliography.place + ", " + bibliography.publisher;
-
-      if (bibliography.date) {
-        value += " (" + bibliography.date + ")";
-      }
-    }
-
-    if (bibliography.volume) {
-      value += ", " + bibliography.volume;
-
-      if (bibliography.volumeNumber) {
-        value += " - " + bibliography.volumeNumber;
-      }
-    }
-
-    if (bibliography.pageNumber) {
-      value += ", " + bibliography.pageNumber;
-    }
-
-    if (bibliography.url) {
-      value += ", " + bibliography.url;
-    }
-
-    const li = document.createElement("li");
-    li.textContent = value;
-    ul.appendChild(li);
-  }
+  await Biflow.addBibliographyItems(df, bibliographies);
 }
 
 // Expressions
