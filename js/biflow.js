@@ -419,8 +419,9 @@ const Biflow = {
 
   async showFullWork(id) {
     // Let's show the loading for any active part of the page.
-    ["workCode", "workCodeDownload", "workTitle", "workGenres", "workContent", "workOtherTranslations",
-     "workAuthor", "workRelatedWorks", "workEditor", "workBibliographies", "workQuote"].forEach(elmName => this.showLoader(elmName));
+    ["workCode", "workCodeDownload", "workTitle", "workGenres",
+     "workContent", "workOtherTranslations", "workAuthor", "workRelatedWorks", "workEditor",
+     "workBibliographies", "workQuote"].forEach(elmName => this.showLoader(elmName));
     ["workAttributions", "workExpressions"].forEach(elmName => this.showLoaderInUL(elmName));
 
     const data = await this.getData("/works/" + id);
@@ -883,7 +884,7 @@ const Biflow = {
       "expressionIncipit", "expressionExplicit", "expressionManuscriptTradition",
       "expressionTextualHistory", "expressionWork",
       "expressionTranslator", "expressionDerivedFrom",
-      "expressionTextualTypology",
+      "expressionTextualTypology", "expressionOtherLanguages",
      ]
       .forEach(elmName => this.showLoader(elmName));
     [ "expressionDerivedExpressions", "expressionLocalisations", ].forEach(elmName => this.showLoaderInUL(elmName));
@@ -903,6 +904,7 @@ const Biflow = {
 
     // The complex ones.
     this.showExpressionLanguage(data);
+    this.showExpressionOtherLanguages(data);
     this.showExpressionWork(data);
     this.showExpressionTranslator(data);
     this.showExpressionTextualTypology(data);
@@ -914,6 +916,17 @@ const Biflow = {
   async showExpressionLanguage(data) {
     const language = await this.getDataWithFullPath(data.language);
     document.getElementById("expressionLanguage").textContent = language.language;
+  },
+
+  async showExpressionOtherLanguages(data) {
+    const languages = [];
+
+    for (let i = 0; i < data.otherLanguages.length; ++i) {
+      const language = await this.getDataWithFullPath(data.otherLanguages[i]);
+      languages.push(language.language);
+    }
+
+    document.getElementById("expressionOtherLanguages").textContent = languages.join(", ");
   },
 
   async showExpressionWork(data) {

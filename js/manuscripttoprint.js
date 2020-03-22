@@ -111,7 +111,7 @@ async function generateDocument(manuscriptId) {
   maybeAddBlock(df, "Note:", manuscript.note);
 
   if (manuscript.link) {
-    const link = `<a href="$ {manuscript.link}">${manuscript.link}</a>`;
+    const link = `<a href="${manuscript.link}">${manuscript.link}</a>`;
     maybeAddBlock(df, "Link:", link);
   }
   

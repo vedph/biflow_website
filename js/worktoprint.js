@@ -90,6 +90,16 @@ async function addExpressionItem(df, expression) {
     maybeAddBlock(df, "Lingua:", language.language);
   }
 
+  if (expression.otherLanguages.length !== 0) {
+    const otherLanguages = [];
+    for (let i = 0; i < expression.otherLanguages.length; ++i) {
+      const language = await Biflow.getDataWithFullPath(expression.otherLanguages[i]);
+      otherLanguages.push(language.language);
+    }
+
+    maybeAddBlock(df, "Altre Lingue:", otherLanguages.join(", "));
+  }
+
   if (expression.textualTypology) {
     const textualTypology = await Biflow.getDataWithFullPath(expression.textualTypology);
     maybeAddBlock(df, "Tipologia testuale:", textualTypology.textualTypology);
@@ -142,6 +152,15 @@ async function addLocalisationItems(df, localisations) {
       const status = await Biflow.getDataWithFullPath(manuscript.checkStatus);
       li.appendChild(document.createTextNode(`${status.checkStatus}`));
       li.appendChild(document.createElement("br"));
+    }
+
+    if (manuscript.editor) {
+      const anchor = document.createElement("a");
+      anchor.target = "_blank";
+      anchor.title = "Scheda manoscritto";
+      anchor.href = "manuscripttoprint.html?id=" + manuscript.id;
+      anchor.appendChild(document.createTextNode("Scheda manoscritto"));
+      li.appendChild(anchor);
     }
   }
 }
