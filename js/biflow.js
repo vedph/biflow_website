@@ -662,13 +662,18 @@ const Biflow = {
      "manuscriptHistory",  "manuscriptNote", "manuscriptPlace",
      "manuscriptPhysDescription", "manuscriptScriptDescription",
      "manuscriptRuledLines", "manuscriptRuledLineTechnique",
-     "manuscriptEditor", ]
+     "manuscriptEditor", "manuscriptShelfMarkDownload" ]
       .forEach(elmName => this.showLoader(elmName));
     ["manuscriptLocalisations", ].forEach(elmName => this.showLoaderInUL(elmName));
 
     const data = await this.getData("/manuscripts/" + id);
     const library = await this.getDataWithFullPath(data.library);
 
+    //setting the download link anchor (manuscript.html)
+    const downloadAnchor = document.getElementById("manuscriptShelfMarkDownload");
+    downloadAnchor.textContent = data.shelfMark;
+    downloadAnchor.title = data.shelfMark;
+    downloadAnchor.href = "manuscripttoprint.html?id=" + data.id;
 
     // The simple elements.
     document.getElementById("manuscriptMainTitle").textContent = library.libraryCode + ", " + data.shelfMark;
@@ -1097,7 +1102,6 @@ const Biflow = {
     anchor.href = this.baseurl + "/manuscript?id=" + manuscript.id;
     anchor.appendChild(document.createTextNode(name));
     title.appendChild(anchor);
-    console.log(manuscript)
 
     if (results && results.length !== 0) {
       results.filter(result => !!result.fieldName).forEach(result => {
@@ -1167,7 +1171,6 @@ const Biflow = {
     }
 
     const expressions = await Promise.all(promises);
-    console.log(expressions);
 
     const topLevelExpressions = [];
     expressions.forEach(expression => {

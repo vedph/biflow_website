@@ -12,44 +12,65 @@ layout: page
   <div class="row">
     <div class="col">
 
-      <div class="table-responsive">
-        <table class="table table-borderless">
-          <tbody>
-            <tr>
-              <th scope="row">Segnatura</th>
-              <td id="manuscriptShelfMark"></td>
-            </tr>
-            <tr>
-              <th scope="row">Biblioteca</th>
-              <td id="manuscriptLibrary"></td>
-            </tr>
-            <tr>
-              <th scope="row">Modalità di analisi</th>
-              <td id="manuscriptCheckStatus"></td>
-            </tr>
-            <tr>
-              <th scope="row">Data</th>
-              <td id="manuscriptDate"></td>
-            </tr>
-            <tr>
-              <th scope="row">Altezza</th>
-              <td id="manuscriptHeight"></td>
-            </tr>
-            <tr>
-              <th scope="row">Larghezza</th>
-              <td id="manuscriptWidth"></td>
-            </tr>
-            <tr>
-              <th scope="row">Materiale</th>
-              <td id="manuscriptMaterial"></td>
-            </tr>
-            <tr>
-              <th scope="row">Tecnica di legatura</th>
-              <td id="manuscriptRuledLineTechnique"></td>
-            </tr>
-          </tbody>
-        </table>
+
+      <div class="row">
+        <div class="col-md-8">
+          <div class="w-100 divider-invisibile"></div>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Segnatura</dt>
+            <dd class="col-sm-9" id="manuscriptShelfMark"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Biblioteca</dt>
+            <dd class="col-sm-9" id="manuscriptLibrary"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Modalità di analisi</dt>
+            <dd class="col-sm-9" id="manuscriptCheckStatus"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Data</dt>
+            <dd class="col-sm-9" id="manuscriptDate"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Altezza</dt>
+            <dd class="col-sm-9" id="manuscriptHeight"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Larghezza</dt>
+            <dd class="col-sm-9" id="manuscriptWidth"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Materiale</dt>
+            <dd class="col-sm-9" id="manuscriptMaterial"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Tecnica di legatura</dt>
+            <dd class="col-sm-9" id="manuscriptRuledLineTechnique"></dd>
+          </dl>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card uploads">
+            <div class="card-header">scarica tutta la scheda</div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item list-group-item-action">
+                <img src="{{ site.baseurl }}/unive/img/pdf.png" alt="file pdf" title="" width="32">
+                <a href="#" title="" target="_blank" id="manuscriptShelfMarkDownload"></a>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
+
        <div class="card">
            <div class="card-header font-weight-bold">
               Legatura
