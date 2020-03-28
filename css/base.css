@@ -53,6 +53,10 @@ footer .full_default {
     border-top: 1px solid #bbb;
 }
 
+.advanced_search {
+	margin-bottom: 0 !important;
+}
+
 /*******************************************************/
 /*                     intestazione       			   */
 /*******************************************************/ 

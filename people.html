@@ -24,6 +24,17 @@ title: Persone
                 <button class="btn btn-primary btn-block" id="filterButton" type="submit">filtra</button>
               </div>
             </div>
+            <div class="advanced_search card" id="ricerca_avanzata">
+              <div class="card-header cursore" data-toggle="collapse" href="#collapse-ricerca_avanzata" data-parent="#ricerca_avanzata">
+                <h4 class=" mb-0 card-title">
+                  Ricerca avanzata <i class="indicator glyphicon glyphicon-plus float-right"></i>
+                </h4>
+              </div>
+              <div id="collapse-ricerca_avanzata" class="collapse">
+                <div class="card-body" id="filterBody">
+                </div>
+              </div>
+            </div>
           </form>
         </div>
       </div>
@@ -39,6 +50,8 @@ title: Persone
 </div>
 
 <script type="text/javascript">
+
+FilterSettings.updateFilterFields("person");
 
 const filter = new URLSearchParams(location.search).get("filter");
 document.getElementById("filter").value = filter;

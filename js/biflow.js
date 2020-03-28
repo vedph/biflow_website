@@ -238,6 +238,204 @@ const SearchSettings = {
   }
 };
 
+const FilterSettings = {
+  person: [
+    {
+      name: "Tipologia",
+      id: "person_typology",
+      type: "select",
+      list: [ {
+        name: "Autore",
+        value: "author",
+      }, {
+        name: "Copista",
+        value: "copyist",
+      }, {
+        name: "Traduttore",
+        value: "translator",
+      },],
+      filter: (person, type) => {
+        switch (type) {
+          case "author":
+            return person.works.length > 0;
+          case "copyist":
+            return person.codices.length > 0;
+          case "translator":
+            return person.translations.length > 0;
+          default:
+            alert("Invalid person type!");
+        }
+        return true;
+      }
+    },
+    {
+      name: "Data di nascita",
+      id: "person_date_birth",
+      type: "date",
+      filter: (person, date) => {
+        return SearchSettings.dateFilter(person.dateBirth, date);
+      }
+    },
+    {
+      name: "Data di morte",
+      id: "person_date_death",
+      type: "date",
+      filter: (person, date) => {
+        return SearchSettings.dateFilter(person.dateDeath, date);
+      }
+    },
+  ],
+
+  work: [
+  ],
+
+  manuscript: [
+    {
+      name: "Data",
+      id: "manuscript_date",
+      type: "date",
+      filter: (manuscript, date) => {
+        return SearchSettings.dateFilter(manuscript.date, date);
+      },
+    }
+  ],
+
+  updateFilterFields(type) {
+    const elm = document.getElementById("filterBody");
+    Biflow.removeContent(elm);
+
+    switch (type) {
+      case "person":
+        this.updateFilterFieldsInternal(elm, FilterSettings.person);
+        break;
+
+      case "work":
+        this.updateFilterFieldsInternal(elm, FilterSettings.work);
+        break;
+
+      case "manuscript":
+        this.updateFilterFieldsInternal(elm, FilterSettings.manuscript);
+        break;
+
+      default:
+        alert("Invalid filter type: " + type);
+    }
+  },
+
+  updateFilterFieldsInternal(elm, fields) {
+    fields.forEach(field => {
+      const title = document.createElement("h5");
+      title.setAttribute("class", "card-title");
+      title.textContent = field.name;
+      elm.appendChild(title);
+
+      switch (field.type) {
+        case "select":
+          this.createSelect(elm, field);
+          break;
+
+        case "date":
+          this.createDate(elm, field);
+          break;
+
+        default:
+          alert("Invalid filter type: " + field.type);
+      }
+    });
+  },
+
+  createSelect(elm, field) {
+    const select = document.createElement("select");
+    select.setAttribute("class", "form-control");
+    select.setAttribute("name", field.id);
+    elm.appendChild(select);
+
+    const option = document.createElement("option");
+    option.value = "";
+    select.appendChild(option);
+
+    const receivedValue = new URL(location).searchParams.get(field.id);
+
+    field.list.forEach(item => {
+      const option = document.createElement("option");
+      option.textContent = item.name;
+      option.value = item.value;
+
+      if (receivedValue == item.value) {
+        option.selected = true;
+      }
+
+      select.appendChild(option);
+    });
+  },
+
+  createDate(elm, field) {
+    const input = document.createElement("input");
+    input.setAttribute("type", "text");
+    input.setAttribute("class", "form-control datepiker");
+    input.setAttribute("name", field.id);
+    input.placeholder="GG/MM/AAAA";
+    elm.appendChild(input);
+
+    const receivedValue = new URL(location).searchParams.get(field.id);
+    input.value = receivedValue;
+
+    const desc = document.createElement("p");
+    desc.textContent = "Formato date supportato:";
+    elm.appendChild(desc);
+
+    const ul = document.createElement("ul");
+    elm.appendChild(ul);
+
+    [
+      ["1200", "Ricerca l'anno preciso"],
+      ["05-1200", "Ricerca anno e mese"],
+      ["12-05-1264", "Rircerca una data precisa"],
+    ].forEach(item => {
+      const li = document.createElement("li");
+      const strong = document.createElement("strong");
+      strong.textContent = item[0];
+      li.appendChild(strong);
+      li.appendChild(document.createTextNode(" " + item[1]));
+      ul.appendChild(li);
+    })
+  },
+
+  filter(object, type) {
+    switch (type) {
+      case "person":
+        return this.filterInternal(object, FilterSettings.person);
+
+      case "work":
+        return this.filterInternal(object, FilterSettings.work);
+
+      case "manuscript":
+        return this.filterInternal(object, FilterSettings.manuscript);
+
+      default:
+        alert("Invalid filter type: " + type);
+        return null;
+    }
+  },
+
+  filterInternal(object, fields) {
+    const sp = new URL(location).searchParams;
+
+    for (let i = 0; i < fields.length; ++i) {
+      const field = fields[i];
+      if (!sp.has(field.id) || sp.get(field.id) === "") {
+        continue;
+      }
+
+      if (!field.filter(object, sp.get(field.id))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+};
+
 const Biflow = {
   URL: "https://mizar.unive.it",
   path: "/catalogo_biflow/api/public/api",
@@ -327,6 +525,10 @@ const Biflow = {
     this.showLoader(elmName);
 
     let data = await this.getData("/people");
+
+    // If the filter engine says no, this item should be ignored.
+    data = data.filter(person => FilterSettings.filter(person, "person"));
+
     data = data.map(person => {
       let results = [];
       if (filter) {
@@ -359,6 +561,10 @@ const Biflow = {
     let libraries = await this.getData("/libraries");
 
     let data = await this.getData("/manuscripts");
+
+    // If the filter engine says no, this item should be ignored.
+    data = data.filter(manuscript => FilterSettings.filter(manuscript, "manuscript"));
+
     data = data.map(manuscript => {
       let results = [];
       if (filter) {
@@ -390,6 +596,9 @@ const Biflow = {
 
     let data = await this.getData("/works");
     data = data.filter(work => work.published);
+
+    // If the filter engine says no, this item should be ignored.
+    data = data.filter(work => FilterSettings.filter(work, "work"));
 
     data = data.map(work => {
       let results = [];
@@ -776,6 +985,10 @@ const Biflow = {
       const localisationData = await this.getDataWithFullPath(data[i]);
       if (localisationData.manuscript) {
         localisationData.manuscript = await this.getDataWithFullPath(localisationData.manuscript);
+  
+        if (localisationData.manuscript.library) {
+          localisationData.library = await this.getDataWithFullPath(localisationData.manuscript.library);
+        }
       }
 
       if (localisationData.expression) {
@@ -804,14 +1017,11 @@ const Biflow = {
       const div = document.createElement('div');
       li.appendChild(div);
 
-      div.appendChild(document.createTextNode("Localizzazione: "));
-      div.appendChild(document.createTextNode(localisation.localisation));
-      div.appendChild(document.createElement("br"));
-
       if (localisation.manuscript) {
+        div.appendChild(document.createTextNode("Manoscritto: "));
         let anchor = document.createElement('a');
         anchor.href = this.baseurl + "/manuscript?id=" + localisation.manuscript.id;
-        anchor.appendChild(document.createTextNode(localisation.manuscript.shelfMark));
+        anchor.appendChild(document.createTextNode(localisation.library.libraryCode + ", " + localisation.manuscript.shelfMark));
         div.appendChild(anchor);
         div.appendChild(document.createElement("br"));
       }
@@ -824,6 +1034,10 @@ const Biflow = {
         div.appendChild(anchor);
         div.appendChild(document.createElement("br"));
       }
+
+      div.appendChild(document.createTextNode("Localizzazione: "));
+      div.appendChild(document.createTextNode(localisation.localisation));
+      div.appendChild(document.createElement("br"));
 
       if (localisation.copyist) {
         div.appendChild(document.createTextNode("Copista: "));
@@ -1087,6 +1301,7 @@ const Biflow = {
     return div;
   },
 
+  //this is the description of a single manuscript in the list
   blockManuscript(manuscript, results, libraries) {
     const div = document.createElement('div');
     div.setAttribute('class', 'row');
@@ -1106,10 +1321,10 @@ const Biflow = {
     const title = document.createElement('h5');
     body.appendChild(title);
 
-    const libraryId = parseInt(manuscript.library.substr(manuscript.library.lastIndexOf("/") + 1), 10);
+    const libraryCodeId = parseInt(manuscript.library.substr(manuscript.library.lastIndexOf("/") + 1), 10);
 
-    const library = libraries.find(library => library.id === libraryId);
-    let name = library.libraryName + "¸ " + library.city + ", " + manuscript.shelfMark;
+    const library = libraries.find(library => library.id === libraryCodeId);
+    let name = library.libraryCode + "¸  " + manuscript.shelfMark;
 
     const anchor = document.createElement('a');
     anchor.href = this.baseurl + "/manuscript?id=" + manuscript.id;
