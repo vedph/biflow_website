@@ -288,7 +288,7 @@ const FilterSettings = {
 
   work: [
     {
-      name: "Genre",
+      name: "Genere",
       id: "work_genre",
       type: "select",
       list: async () => {
