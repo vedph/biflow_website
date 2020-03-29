@@ -244,7 +244,7 @@ const FilterSettings = {
       name: "Tipologia",
       id: "person_typology",
       type: "select",
-      list: [ {
+      list: () => [ {
         name: "Autore",
         value: "author",
       }, {
@@ -287,6 +287,30 @@ const FilterSettings = {
   ],
 
   work: [
+    {
+      name: "Genre",
+      id: "work_genre",
+      type: "select",
+      list: async () => {
+        const list = [];
+
+        const genres = await Biflow.getData("/genres");
+        genres.forEach(genre => {
+          list.push({ name: genre.genre, value: genre.id });
+        });
+
+        return list;
+      },
+      filter: (work, type) => {
+        for (const genre of work.genres) {
+          const genreId = genre.substr(genre.lastIndexOf("/") +1);
+          if (genreId === type) {
+            return true;
+          }
+        }
+        return false;
+      }
+    },
   ],
 
   manuscript: [
@@ -300,21 +324,21 @@ const FilterSettings = {
     }
   ],
 
-  updateFilterFields(type) {
+  async updateFilterFields(type) {
     const elm = document.getElementById("filterBody");
     Biflow.removeContent(elm);
 
     switch (type) {
       case "person":
-        this.updateFilterFieldsInternal(elm, FilterSettings.person);
+        await this.updateFilterFieldsInternal(elm, FilterSettings.person);
         break;
 
       case "work":
-        this.updateFilterFieldsInternal(elm, FilterSettings.work);
+        await this.updateFilterFieldsInternal(elm, FilterSettings.work);
         break;
 
       case "manuscript":
-        this.updateFilterFieldsInternal(elm, FilterSettings.manuscript);
+        await this.updateFilterFieldsInternal(elm, FilterSettings.manuscript);
         break;
 
       default:
@@ -322,8 +346,8 @@ const FilterSettings = {
     }
   },
 
-  updateFilterFieldsInternal(elm, fields) {
-    fields.forEach(field => {
+  async updateFilterFieldsInternal(elm, fields) {
+    for (let field of fields) {
       const title = document.createElement("h5");
       title.setAttribute("class", "card-title");
       title.textContent = field.name;
@@ -331,7 +355,7 @@ const FilterSettings = {
 
       switch (field.type) {
         case "select":
-          this.createSelect(elm, field);
+          await this.createSelect(elm, field);
           break;
 
         case "date":
@@ -341,10 +365,10 @@ const FilterSettings = {
         default:
           alert("Invalid filter type: " + field.type);
       }
-    });
+    }
   },
 
-  createSelect(elm, field) {
+  async createSelect(elm, field) {
     const select = document.createElement("select");
     select.setAttribute("class", "form-control");
     select.setAttribute("name", field.id);
@@ -356,7 +380,8 @@ const FilterSettings = {
 
     const receivedValue = new URL(location).searchParams.get(field.id);
 
-    field.list.forEach(item => {
+    const items = await field.list();
+    items.forEach(item => {
       const option = document.createElement("option");
       option.textContent = item.name;
       option.value = item.value;
