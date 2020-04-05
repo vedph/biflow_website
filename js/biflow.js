@@ -703,7 +703,7 @@ const Biflow = {
     dots.push("graph {");
     dots.push("rankdir=LR;");
     expressions.forEach(e => {
-      dots.push(`"${e.code}"`);
+      dots.push(`"${e.code}" [URL="${this.baseurl}/expression?id=${e.id}", color="blue"]`);
       e.derivedFromExpressions.forEach(de => {
         const id = parseInt(de.substr(de.lastIndexOf("/") +1), 10);
         de = expressions.find(ee => ee.id === id);
@@ -712,13 +712,13 @@ const Biflow = {
     });
     dots.push("}");
 
-    const img = document.createElement("img");
-    const url = new URL("https://image-charts.com/chart?chs=700x200&cht=gv");
-    url.searchParams.set("chl", dots.join(""));
-    img.src = url.href;
+    const url = new URL("http://mizar.unive.it/catalogo_biflow/graphviz/");
+    url.searchParams.set("dot", dots.join(""));
+
+    const svg = await fetch(url).then(r => r.text());
     //End Diagram
 
-    this.maybeCreateCard("workBody", "Opera e relative versioni", img, "workDiagram");
+    this.maybeCreateCard("workBody", "Opera e relative versioni", svg, "workDiagram");
   },
 
   // This method creates a single card if there is something to show.
