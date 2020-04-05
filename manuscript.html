@@ -10,7 +10,7 @@ layout: page
 
 <div class="container">
   <div class="row">
-    <div class="col">
+    <div class="col" id="manuscriptBody">
 
 
       <div class="row">
@@ -18,13 +18,23 @@ layout: page
           <div class="w-100 divider-invisibile"></div>
 
           <dl class="row riga-bt">
+            <dt class="col-sm-3">Biblioteca</dt>
+            <dd class="col-sm-9" id="manuscriptLibrary"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
             <dt class="col-sm-3">Segnatura</dt>
             <dd class="col-sm-9" id="manuscriptShelfMark"></dd>
           </dl>
 
           <dl class="row riga-bt">
-            <dt class="col-sm-3">Biblioteca</dt>
-            <dd class="col-sm-9" id="manuscriptLibrary"></dd>
+            <dt class="col-sm-3">Tipologia</dt>
+            <dd class="col-sm-9" id="manuscriptTypology"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Luogo</dt>
+            <dd class="col-sm-9" id="manuscriptPlace"></dd>
           </dl>
 
           <dl class="row riga-bt">
@@ -35,16 +45,6 @@ layout: page
           <dl class="row riga-bt">
             <dt class="col-sm-3">Data</dt>
             <dd class="col-sm-9" id="manuscriptDate"></dd>
-          </dl>
-
-          <dl class="row riga-bt">
-            <dt class="col-sm-3">Altezza</dt>
-            <dd class="col-sm-9" id="manuscriptHeight"></dd>
-          </dl>
-
-          <dl class="row riga-bt">
-            <dt class="col-sm-3">Larghezza</dt>
-            <dd class="col-sm-9" id="manuscriptWidth"></dd>
           </dl>
 
           <dl class="row riga-bt">
@@ -70,91 +70,6 @@ layout: page
           </div>
         </div>
       </div>
-
-       <div class="card">
-           <div class="card-header font-weight-bold">
-              Legatura
-           </div>
-           <div class="card-body" id="manuscriptBinding"></div>
-       </div>
-
-       <div class="card">
-           <div class="card-header font-weight-bold">
-              Collazione
-           </div>
-           <div class="card-body" id="manuscriptCollationDescription"></div>
-       </div>
-
-       <div class="card">
-           <div class="card-header font-weight-bold">
-              Decorazione
-           </div>
-           <div class="card-body" id="manuscriptDecoDescription"></div>
-       </div>
-
-       <div class="card">
-           <div class="card-header font-weight-bold">
-              Descrizione Fisica
-           </div>
-           <div class="card-body" id="manuscriptPhysDescription"></div>
-       </div>
-
-       <div class="card">
-           <div class="card-header font-weight-bold">
-              Scrittura
-           </div>
-           <div class="card-body" id="manuscriptScriptDescription"></div>
-       </div>
-
-       <div class="card">
-           <div class="card-header font-weight-bold">
-              Storia del codice
-           </div>
-           <div class="card-body" id="manuscriptHistory"></div>
-       </div>
-
-       <div class="card">
-           <div class="card-header font-weight-bold">
-              Contenuto
-           </div>
-           <div class="card-body" id="manuscriptContent"></div>
-       </div>
-
-       <div class="card">
-           <div class="card-header font-weight-bold">
-              Note
-           </div>
-           <div class="card-body" id="manuscriptNote"></div>
-       </div>
-
-       <div class="card">
-           <div class="card-header font-weight-bold">
-              Sistema di rigatura
-           </div>
-           <div class="card-body" id="manuscriptRuledLines"></div>
-       </div>
-
-       <div class="card">
-           <div class="card-header font-weight-bold">
-              Luogo
-           </div>
-           <div class="card-body" id="manuscriptPlace"></div>
-       </div>
-       <div class="card">
-           <div class="card-header font-weight-bold">
-              Localizzazione
-           </div>
-           <ul class="list-group list-group-flush" id="manuscriptLocalisations">
-           </ul>
-       </div>
-
-      <div class="w-100 divider-invisibile-doppio"></div>
-
-      <dl class="row">
-          <dt class="col-sm-3">Autore:</dt>
-          <dd class="col-sm-9" id="manuscriptEditor"></dd>
-      </dl>
-
     </div>
   </div>
 </div>

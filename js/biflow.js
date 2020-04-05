@@ -650,69 +650,112 @@ const Biflow = {
     const b = this.blockWork(work.work, work.results);
     elm.appendChild(b);
   },
-
+  //Visualise the full work
   async showFullWork(id) {
     // Let's show the loading for any active part of the page.
     ["workCode", "workCodeDownload", "workTitle", "workGenres",
-     "workContent", "workOtherTranslations", "workAuthor", "workRelatedWorks", "workEditor",
-     "workBibliographies", "workQuote"].forEach(elmName => this.showLoader(elmName));
-    ["workAttributions", "workExpressions"].forEach(elmName => this.showLoaderInUL(elmName));
+     "workAuthor"].forEach(elmName => this.showLoader(elmName));
 
+    // it gets the data from the server
     const data = await this.getData("/works/" + id);
 
-    // The simple elements.
+    // Show the simple elements.
     document.getElementById("workMainTitle").textContent = data.code;
     document.getElementById("workCode").textContent = data.code;
-    document.getElementById("workContent").innerHTML = data.content;
-    document.getElementById("workOtherTranslations").innerHTML = data.otherTranslations;
-    document.getElementById("workRelatedWorks").innerHTML = data.relatedWorks;
 
     const downloadAnchor = document.getElementById("workCodeDownload");
     downloadAnchor.textContent = data.code;
     downloadAnchor.title = data.code;
     downloadAnchor.href = "worktoprint.html?id=" + data.id;
 
-    // The complex ones.
+    // show the complex elements: elements connected to other elements.
     this.showWorkAuthor(data);
-    this.showWorkAttributions(data);
     this.showWorkGenres(data);
-    this.showWorkEditor(data);
-    this.showWorkBibliographies(data);
-    this.showWorkQuote(data);
-    this.showExpressions(data.expressions, "workExpressions", expressions => {
-      const topLevelExpressions = [];
-      expressions.forEach(expression => {
-        if (expression.derivedFromExpressions.length === 0) {
-          topLevelExpressions.push(expression);
-        }
-      });
+    this.showWorkTitle(data);
 
-      document.getElementById("workTitle").textContent = this.dedupArray(topLevelExpressions.map(e => e.title)).join(", ");
+    //show elements only when they are not empty
+    await this.showWorkDiagram(data);
+    await this.showExpressionsCard(data.expressions, "workBody", "Versioni");
+    this.maybeCreateCard("workBody", "Contenuto", data.content);
+    this.maybeCreateCard("workBody", "Altre traduzioni", data.otherTranslations);
+    this.maybeCreateCard("workBody", "Lavori collegati", data.relatedWorks);
 
-      // Diagram.
-      const dots = [];
-      dots.push("graph {");
-      dots.push("rankdir=LR;");
-      expressions.forEach(e => {
-        e.derivedFromExpressions.forEach(de => {
-          const id = parseInt(de.substr(de.lastIndexOf("/") +1), 10);
-          de = expressions.find(ee => ee.id === id);
-          dots.push(`"${de.code}" -- "${e.code}";`);
-        });
-      });
-      dots.push("}");
+    // This creates another card.
+    await this.showWorkAttributions(data);
 
-      const img = document.createElement("img");
-      document.getElementById("workDiagram").appendChild(img);
-      const url = new URL("https://image-charts.com/chart?chs=700x200&cht=gv");
-      url.searchParams.set("chl", dots.join(""));
-      img.src = url.href;
-    });
+    // This creates another card.
+    await this.showWorkBibliographies(data);
+
+    await this.showEditor("workBody", "Autore della scheda:", data);
+    await this.showWorkQuote(data);
   },
 
-// End diagram
+  async showWorkDiagram(data) {
+    const expressions = [];
 
-  async showExpressions(list, elmName, cb = null) {
+    for (let i = 0; i < data.expressions.length; ++i) {
+      const expression = await this.getDataWithFullPath(data.expressions[i]);
+      expressions.push(expression);
+    }
+
+    // Diagram.
+    const dots = [];
+    dots.push("graph {");
+    dots.push("rankdir=LR;");
+    expressions.forEach(e => {
+      dots.push(`"${e.code}"`);
+      e.derivedFromExpressions.forEach(de => {
+        const id = parseInt(de.substr(de.lastIndexOf("/") +1), 10);
+        de = expressions.find(ee => ee.id === id);
+        dots.push(`"${de.code}" -- "${e.code}";`);
+      });
+    });
+    dots.push("}");
+
+    const img = document.createElement("img");
+    const url = new URL("https://image-charts.com/chart?chs=700x200&cht=gv");
+    url.searchParams.set("chl", dots.join(""));
+    img.src = url.href;
+    //End Diagram
+
+    this.maybeCreateCard("workBody", "Opera e relative versioni", img, "workDiagram");
+  },
+
+  // This method creates a single card if there is something to show.
+  maybeCreateCard(elmName, title, content, extraClass = "") {
+    if (!content) {
+      return;
+    }
+
+    const elm = document.getElementById(elmName);
+
+    const card = document.createElement("div");
+    card.setAttribute("class", "card");
+    elm.appendChild(card);
+
+    const header = document.createElement("div");
+    header.setAttribute("class", "card-header font-weight-bold");
+    header.textContent = title;
+    card.appendChild(header);
+
+    const body = document.createElement("div");
+    body.setAttribute("class", "card-body " + extraClass);
+
+    if (typeof content == "string" || typeof content == "number") {
+      body.innerHTML = content;
+    } else {
+      body.appendChild(content);
+    }
+
+    card.appendChild(body);
+  },
+
+  // Show a list of expressions
+  async showExpressionsCard(list, elmName, title) {
+    if (list.length == 0) {
+      return;
+    }
+
     const expressions = [];
 
     for (let i = 0; i < list.length; ++i) {
@@ -720,14 +763,11 @@ const Biflow = {
       expressions.push(expression);
     }
 
-    const elm = document.getElementById(elmName);
-    this.removeContent(elm);
-
     const ul = document.createElement("ul");
     ul.setAttribute("class", "list-group list-group-flush");
-    elm.appendChild(ul);
 
     expressions.forEach(expression => {
+      //show a single expression.
       const li = document.createElement("li");
       li.setAttribute("class", "list-group-item list-group-item-action");
       ul.appendChild(li);
@@ -735,7 +775,7 @@ const Biflow = {
       const div = document.createElement('div');
       li.appendChild(div);
 
-      div.appendChild(document.createTextNode("Code: "));
+      div.appendChild(document.createTextNode("Codice: "));
 
       const anchor = document.createElement('a');
       anchor.href = this.baseurl + "/expression?id=" + expression.id;
@@ -747,15 +787,48 @@ const Biflow = {
       div.appendChild(document.createTextNode(expression.title));
     });
 
-    if (cb) {
-      cb(expressions);
-    }
+    this.maybeCreateCard(elmName, title, ul);
   },
 
-  async showWorkEditor(data) {
+  async showEditor(elmName, title, data) {
+    if (!data.editor) {
+      return;
+    }
+
     const editor = await this.getDataWithFullPath(data.editor);
-    const elm = document.getElementById("workEditor");
-    elm.textContent = editor.editor;
+
+    const elm = document.getElementById(elmName);
+
+    const sep = document.createElement("div");
+    sep.setAttribute("class", "w-100 divider-invisibile-doppio");
+    elm.appendChild(sep);
+
+    const row = document.createElement("dl");
+    row.setAttribute("class", "row");
+    elm.appendChild(row);
+
+    const dt = document.createElement("dt");
+    dt.setAttribute("class", "col-sm-3");
+    dt.textContent = title;
+    row.appendChild(dt);
+
+    const dd = document.createElement("dd");
+    dd.setAttribute("class", "col-sm-9");
+    dd.textContent = editor.editor;
+    row.appendChild(dd);
+  },
+
+  async showWorkTitle(data) {
+    const topLevelExpressions = [];
+
+    for (let i = 0; i < data.expressions.length; ++i) {
+      const expression = await this.getDataWithFullPath(data.expressions[i]);
+      if (expression.derivedFromExpressions.length === 0) {
+        topLevelExpressions.push(expression);
+      }
+    }
+
+    document.getElementById("workTitle").textContent = this.dedupArray(topLevelExpressions.map(e => e.title)).join(", ");
   },
 
   async showWorkQuote(data) {
@@ -764,17 +837,35 @@ const Biflow = {
     quote.push(editor.editor);
     quote.push("<em>"+data.code+"</em>");
     quote.push("in <em>Toscana Bilingue</em> - Catalogo Biflow, Venezia, ECF,  pubblicato il " + data.creationDate)
-    const elm = document.getElementById("workQuote")
-    elm.innerHTML = quote.join(", ");
+
+    const elm = document.getElementById("workBody");
+
+    const row = document.createElement("dl");
+    row.setAttribute("class", "row");
+    elm.appendChild(row);
+
+    const dt = document.createElement("dt");
+    dt.setAttribute("class", "col-sm-3");
+    dt.textContent = "Come citare questa scheda:";
+    row.appendChild(dt);
+
+    const dd = document.createElement("dd");
+    dd.setAttribute("class", "col-sm-9");
+    dd.innerHTML = quote.join(", ");
+    row.appendChild(dd);
   },
 
   async showWorkBibliographies(data) {
+    if (data.bibliographies.length == 0) {
+      return;
+    }
+
     const df = new DocumentFragment();
     await this.addBibliographyItems(df, data.bibliographies);
-    const elm = document.getElementById("workBibliographies");
-    this.removeContent(elm);
-    elm.appendChild(df);
+
+    this.maybeCreateCard("workBody", "Bibliografia", df);
   },
+
   // Bibliographies
   async addBibliographyItems(df, bibliographies) {
     df.appendChild(document.createElement("br"));
@@ -859,6 +950,10 @@ const Biflow = {
   },
 
   async showWorkAttributions(data) {
+    if (data.attributions.length === 0) {
+      return;
+    }
+
     const attributions = [];
     for (let i = 0; i < data.attributions.length; ++i) {
       // This is the work-attribution.
@@ -866,12 +961,8 @@ const Biflow = {
       attributions.push(attributionData);
     }
 
-    const elm = document.getElementById("workAttributions");
-    this.removeContent(elm);
-
     const ul = document.createElement("ul");
     ul.setAttribute("class", "list-group list-group-flush");
-    elm.appendChild(ul);
 
     attributions.forEach(attribution => {
       const li = document.createElement("li");
@@ -886,20 +977,14 @@ const Biflow = {
       anchor.appendChild(document.createTextNode(attribution.name));
       div.appendChild(anchor);
     });
+
+    this.maybeCreateCard("workBody", "Altre Attribuzioni", ul);
   },
 
   async showFullManuscript(id) {
     // Let's show the loading for any active part of the page.
-    ["manuscriptShelfMark", "manuscriptCheckStatus", "manuscriptDate",
-     "manuscriptHeight", "manuscriptWidth", "manuscriptLibrary",
-     "manuscriptMaterial", "manuscriptCollationDescription",
-     "manuscriptBinding", "manuscriptDecoDescription",
-     "manuscriptHistory",  "manuscriptNote", "manuscriptPlace",
-     "manuscriptPhysDescription", "manuscriptScriptDescription",
-     "manuscriptRuledLines", "manuscriptRuledLineTechnique",
-     "manuscriptEditor", "manuscriptShelfMarkDownload" ]
+    ["manuscriptShelfMark", "manuscriptDate", "manuscriptLibrary", "manuscriptMaterial", "manuscriptShelfMarkDownload", "manuscriptTypology" ]
       .forEach(elmName => this.showLoader(elmName));
-    ["manuscriptLocalisations", ].forEach(elmName => this.showLoaderInUL(elmName));
 
     const data = await this.getData("/manuscripts/" + id);
     const library = await this.getDataWithFullPath(data.library);
@@ -914,30 +999,55 @@ const Biflow = {
     document.getElementById("manuscriptMainTitle").textContent = library.libraryCode + ", " + data.shelfMark;
     document.getElementById("manuscriptDate").textContent = data.date;
     document.getElementById("manuscriptShelfMark").textContent = data.shelfMark;
-    document.getElementById("manuscriptHeight").textContent = data.height;
-    document.getElementById("manuscriptWidth").textContent = data.width;
-    document.getElementById("manuscriptCollationDescription").innerHTML = data.collationDescription;
-    document.getElementById("manuscriptBinding").innerHTML = data.binding;
-    document.getElementById("manuscriptPhysDescription").innerHTML = data.physDescription;
-    document.getElementById("manuscriptDecoDescription").innerHTML = data.decoDescription;
-    document.getElementById("manuscriptScriptDescription").innerHTML = data.scriptDescription;
-    document.getElementById("manuscriptHistory").innerHTML = data.history;
-    document.getElementById("manuscriptNote").innerHTML = data.note;
-    document.getElementById("manuscriptContent").innerHTML = data.content;
-    document.getElementById("manuscriptPlace").innerHTML = data.place;
-    document.getElementById("manuscriptRuledLines").innerHTML = data.place;
+    document.getElementById("manuscriptPlace").textContent = data.place;
 
-    this.showManuscriptCheckStatus(data);
     this.showManuscriptLibrary(data);
     this.showManuscriptMaterial(data);
-    this.showManuscriptRuledLineTechnique(data);
-    this.showLocalisations(data.localisations, "manuscriptLocalisations");
-    this.showManuscriptEditor(data);
+    this.showManuscriptTypology(data);
+
+    // List of cards
+    this.maybeCreateCard("manuscriptBody", "Descrizione Fisica", data.physDescription);
+    this.maybeCreateCard("manuscriptBody", "Collazione", data.collationDescription);
+    this.maybeCreateCard("manuscriptBody", "Larghezza", data.width);
+    this.maybeCreateCard("manuscriptBody", "Altezza", data.height);
+    await this.showManuscriptRuledLineTechnique(data);
+    this.maybeCreateCard("manuscriptBody", "Sistema di rigatura", data.ruledLines);
+    this.maybeCreateCard("manuscriptBody", "Scrittura", data.scriptDescription);
+    this.maybeCreateCard("manuscriptBody", "Decorazione", data.decoDescription);
+    this.maybeCreateCard("manuscriptBody", "Legatura", data.binding);
+    this.maybeCreateCard("manuscriptBody", "Contenuto", data.content);
+    this.maybeCreateCard("manuscriptBody", "Storia del codice", data.history);
+    this.maybeCreateCard("manuscriptBody", "Note", data.note);
+    await this.showManuscriptCheckStatus(data);
+    await this.showLocalisationsCard(data.localisations, "manuscriptBody", "Localizazione");
+    await this.showManuscriptBibliographies(data);
+
+    await this.showEditor("manuscriptBody", "Autore della scheda del manoscritto:", data);
+  },
+
+  async showManuscriptTypology(data) {
+    const typology = await this.getDataWithFullPath(data.typology);
+    document.getElementById("manuscriptTypology").textContent = typology.typology;
   },
 
   async showManuscriptCheckStatus(data) {
+    if (!data.checkStatus) {
+      return;
+    }
+
     const checkStatus = await this.getDataWithFullPath(data.checkStatus);
-    document.getElementById("manuscriptCheckStatus").textContent = checkStatus.checkStatus;
+    this.maybeCreateCard("manuscriptBody", "Modalità di analisi", checkStatus.checkStatus);
+  },
+
+  async showManuscriptBibliographies(data) {
+    if (data.bibliographies.length == 0) {
+      return;
+    }
+
+    const df = new DocumentFragment();
+    await this.addBibliographyItems(df, data.bibliographies);
+
+    this.maybeCreateCard("manuscriptBody", "Bibliografia", df);
   },
 
   async showManuscriptLibrary(data) {
@@ -962,33 +1072,18 @@ const Biflow = {
   },
 
   async showManuscriptRuledLineTechnique(data) {
-    const elm = document.getElementById("manuscriptRuledLineTechnique");
-    if (!data.ruledLineTecnique) {
-      this.removeContent(elm);
+    if (!data.ruledLineTechnique) {
       return;
     }
 
     const ruledLineTechnique = await this.getDataWithFullPath(data.ruledLineTechnique);
-    elm.textContent = ruledLineTechnique.ruledLineTechnique;
-  },
-
-  async showManuscriptEditor(data) {
-    const elm = document.getElementById("manuscriptEditor");
-
-    if (!data.editor) {
-      this.removeContent(elm);
-      return;
-    }
-
-    const editor = await this.getDataWithFullPath(data.editor);
-    elm.textContent = editor.editor;
+    this.maybeCreateCard("manuscriptBody", "Tecnica di legatura",  ruledLineTechnique.ruledLineTechnique);
   },
 
   async showFullPerson(id) {
     // Let's show the loading for any active part of the page.
     ["personName", "personNicknames", "personBirthDate", "personDeathDate" ]
       .forEach(elmName => this.showLoader(elmName));
-    ["personWorks", "personTranslations", "personCodices"].forEach(elmName => this.showLoaderInUL(elmName));
 
     const data = await this.getData("/people/" + id);
 
@@ -999,18 +1094,24 @@ const Biflow = {
     document.getElementById("personDeathDate").textContent = data.dateDeath;
 
     this.showPersonNicknames(data);
-    this.showPersonWorks(data);
-    this.showExpressions(data.translations, "personTranslations");
-    this.showLocalisations(data.codices, "personCodices");
+
+    // The cards.
+    await this.showPersonWorks(data);
+    await this.showExpressionsCard(data.translations, "personBody", "Traduttore");
+    await this.showLocalisationsCard(data.codices, "personBody", "Copista");
   },
 
-  async showLocalisations(data, elmName) {
+  async showLocalisationsCard(data, elmName, title) {
+    if (data.length === 0) {
+      return;
+    }
+
     const localisations = [];
     for (let i = 0; i < data.length; ++i) {
       const localisationData = await this.getDataWithFullPath(data[i]);
       if (localisationData.manuscript) {
         localisationData.manuscript = await this.getDataWithFullPath(localisationData.manuscript);
-  
+
         if (localisationData.manuscript.library) {
           localisationData.library = await this.getDataWithFullPath(localisationData.manuscript.library);
         }
@@ -1027,12 +1128,8 @@ const Biflow = {
       localisations.push(localisationData);
     }
 
-    const elm = document.getElementById(elmName);
-    this.removeContent(elm);
-
     const ul = document.createElement("ul");
     ul.setAttribute("class", "list-group list-group-flush");
-    elm.appendChild(ul);
 
     localisations.forEach(localisation => {
       const li = document.createElement("li");
@@ -1076,7 +1173,10 @@ const Biflow = {
       div.appendChild(document.createTextNode("Data: "));
       div.appendChild(document.createTextNode(localisation.date));
     });
+
+    this.maybeCreateCard(elmName, title, ul);
   },
+
   async showPersonNicknames(data) {
     const nicknames = [];
     for (let i = 0; i < data.nicknames.length; ++i) {
@@ -1087,17 +1187,17 @@ const Biflow = {
   },
 
   async showPersonWorks(data) {
+    if (data.works.length == 0) {
+       return;
+    }
+
     const works = [];
     for (let i = 0; i < data.works.length; ++i) {
       works.push(await this.getDataWithFullPath(data.works[i]));
     }
 
-    const elm = document.getElementById("personWorks");
-    this.removeContent(elm);
-
     const ul = document.createElement("ul");
     ul.setAttribute("class", "list-group list-group-flush");
-    elm.appendChild(ul);
 
     works.forEach(work => {
       const li = document.createElement("li");
@@ -1107,26 +1207,25 @@ const Biflow = {
       const div = document.createElement('div');
       li.appendChild(div);
 
-      div.appendChild(document.createTextNode("Code: "));
+      div.appendChild(document.createTextNode("Codice: "));
 
       const anchor = document.createElement('a');
       anchor.href = this.baseurl + "/work?id=" + work.id;
       anchor.appendChild(document.createTextNode(work.code));
       div.appendChild(anchor);
     });
+
+    this.maybeCreateCard("personBody", "Autore", ul);
   },
 
   async showFullExpression(id) {
     // Let's show the loading for any active part of the page.
     [ "expressionCode", "expressionDate", "expressionLanguage",
-      "expressionTitle", "expressionEditionHistory",
-      "expressionIncipit", "expressionExplicit", "expressionManuscriptTradition",
-      "expressionTextualHistory", "expressionWork",
+      "expressionTitle", "expressionWork",
       "expressionTranslator", "expressionDerivedFrom",
       "expressionTextualTypology", "expressionOtherLanguages",
      ]
       .forEach(elmName => this.showLoader(elmName));
-    [ "expressionDerivedExpressions", "expressionLocalisations", ].forEach(elmName => this.showLoaderInUL(elmName));
 
     const data = await this.getData("/expressions/" + id);
 
@@ -1135,11 +1234,6 @@ const Biflow = {
     document.getElementById("expressionCode").textContent = data.code;
     document.getElementById("expressionDate").textContent = data.date;
     document.getElementById("expressionTitle").textContent = data.title;
-    document.getElementById("expressionEditionHistory").innerHTML = data.editionHistory;
-    document.getElementById("expressionIncipit").innerHTML = data.incipit;
-    document.getElementById("expressionExplicit").innerHTML = data.explicit;
-    document.getElementById("expressionManuscriptTradition").innerHTML = data.manuscriptTradition;
-    document.getElementById("expressionTextualHistory").innerHTML = data.textualHistory;
 
     // The complex ones.
     this.showExpressionLanguage(data);
@@ -1148,8 +1242,15 @@ const Biflow = {
     this.showExpressionTranslator(data);
     this.showExpressionTextualTypology(data);
     this.showExpressionDerivedFrom(data);
-    this.showExpressions(data.derivedExpressions, "expressionDerivedExpressions");
-    this.showLocalisations(data.localisations, "expressionLocalisations");
+
+    // The cards.
+    this.maybeCreateCard("expressionBody", "Storia editoriale", data.editionHistory);
+    this.maybeCreateCard("expressionBody", "Incipt", data.incipit);
+    this.maybeCreateCard("expressionBody", "Explicit", data.explicit);
+    this.maybeCreateCard("expressionBody", "Storia testuale", data.textualHistory);;
+    this.maybeCreateCard("expressionBody", "Sintesi della tradizione manoscritta", data.manuscriptTradition);
+    await this.showLocalisationsCard(data.localisations, "expressionBody", "Tradizione manoscritta");
+    await this.showExpressionsCard(data.derivedExpressions, "expressionBody", "Espressioni derivate");
   },
 
   async showExpressionLanguage(data) {
