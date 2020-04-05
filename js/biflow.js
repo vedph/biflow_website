@@ -1912,7 +1912,7 @@ const Biflow = {
     }).filter(elm => !!elm));
 
     // Let's fetch the libraries for the manuscript blocks.
-    const libraries = await this.getData("/libraries");
+    const libraryData = await this.getData("/libraries");
 
     const manuscripts = await this.getData("/manuscripts").then(manuscripts => manuscripts.map(manuscript => {
       const results = SearchSettings.filterManuscript(manuscript, search);
@@ -1921,7 +1921,7 @@ const Biflow = {
       }
 
       return {
-        elm: this.blockManuscript(manuscript, results, libraries),
+        elm: this.blockManuscript(manuscript, results, libraryData),
         priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
       };
     }).filter(elm => !!elm));
@@ -1938,10 +1938,46 @@ const Biflow = {
       };
     }).filter(elm => !!elm));
 
+    const genres = await this.getData("/genres").then(genres => genres.map(genre => {
+      const results = SearchSettings.filterGenre(genre, search);
+      if (results.length === 0) {
+        return null;
+      }
+
+      return {
+        elm: this.blockGenre(genre, results),
+        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+      };
+    }).filter(elm => !!elm));
+
+    const libraries = await this.getData("/libraries").then(libraries => libraries.map(library => {
+      const results = SearchSettings.filterLibrary(library, search);
+      if (results.length === 0) {
+        return null;
+      }
+
+      return {
+        elm: this.blockLibrary(library, results),
+        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+      };
+    }).filter(elm => !!elm));
+
+    const languages = await this.getData("/languages").then(languages => languages.map(language => {
+      const results = SearchSettings.filterLanguage(language, search);
+      if (results.length === 0) {
+        return null;
+      }
+
+      return {
+        elm: this.blockLanguage(language, results),
+        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+      };
+    }).filter(elm => !!elm));
+
     const elm = document.getElementById("resultsContainer");
     this.removeContent(elm);
 
-    const results = people.concat(works).concat(manuscripts).concat(expressions);
+    const results = people.concat(works).concat(manuscripts).concat(expressions).concat(genres).concat(libraries).concat(languages);
     results.sort((a, b) => a.priority > b.priority);
 
     document.getElementById("searchMainTitle").textContent = "Risultati: " + results.length;
