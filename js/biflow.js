@@ -712,7 +712,7 @@ const Biflow = {
     });
     dots.push("}");
 
-    const url = new URL("http://mizar.unive.it/catalogo_biflow/graphviz/");
+    const url = new URL("https://mizar.unive.it/catalogo_biflow/graphviz/");
     url.searchParams.set("dot", dots.join(""));
 
     const svg = await fetch(url).then(r => r.text());
