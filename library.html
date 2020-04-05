@@ -1,0 +1,39 @@
+---
+layout: page
+---
+
+<div class="grigio_ar">
+  <div class="container">
+    <h1 id="libraryMainTitle">Loading</h1>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col" id="libraryBody">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="w-100 divider-invisibile"></div>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Città</dt>
+            <dd class="col-sm-9" id="libraryCity"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Codice</dt>
+            <dd class="col-sm-9" id="libraryCode"></dd>
+          </dl>
+        </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+const searchParams = new URLSearchParams(window.location.search);
+const id = searchParams.get("id");
+
+Biflow.showFullLibrary(id);
+
+</script>

@@ -42,6 +42,26 @@ const SearchSettings = {
     ]);
   },
 
+  filterLanguage(language, filter) {
+    return this.filterGeneric(language, filter, [
+      { field: 'language', priority: 1, name: null, },
+    ]);
+  },
+
+  filterGenre(genre, filter) {
+    return this.filterGeneric(genre, filter, [
+      { field: 'genre', priority: 1, name: null, },
+    ]);
+  },
+
+  filterLibrary(library, filter) {
+    return this.filterGeneric(library, filter, [
+      { field: 'libraryName', priority: 1, name: null, },
+      { field: 'city', priority: 2, name: null, },
+      { field: 'libraryCode', priority: 2, name: null, },
+    ]);
+  },
+
   filterGeneric(what, filter, fields) {
     let priorities = [];
 
@@ -616,6 +636,196 @@ const Biflow = {
     elm.appendChild(p);
   },
 
+  async showLibraries(elmName, filter) {
+    this.showLoader(elmName);
+
+    let data = await this.getData("/libraries");
+
+    data = data.map(library => {
+      let results = [];
+      if (filter) {
+        results = SearchSettings.filterLibrary(library, filter);
+      }
+
+      return { library, results, }
+    });
+
+    if (filter) {
+      data = data.filter(library => library.results.length !== 0);
+    }
+
+    const elm = document.getElementById(elmName);
+    this.removeContent(elm);
+
+    const pageData = this.reducePagination(data);
+    pageData.data.forEach(library => this.showLibrary(elm, library));
+    this.showPagination(pageData);
+  },
+
+  showLibrary(elm, library) {
+    const b = this.blockLibrary(library.library, library.results);
+    elm.appendChild(b);
+  },
+
+  blockLibrary(library, results) {
+    const div = document.createElement('div');
+    div.setAttribute('class', 'row');
+
+    const col = document.createElement('div');
+    col.setAttribute('class', 'col');
+    div.appendChild(col);
+
+    const card = document.createElement('div');
+    card.setAttribute('class', 'card');
+    col.appendChild(card);
+
+    const body = document.createElement('div');
+    body.setAttribute('class', 'card-body');
+    card.appendChild(body);
+
+    const title = document.createElement('h5');
+    body.appendChild(title);
+
+    const anchor = document.createElement('a');
+    anchor.href = this.baseurl + "/library?id=" + library.id;
+    anchor.appendChild(document.createTextNode(library.libraryName));
+    title.appendChild(anchor);
+
+    if (library.libraryCode) {
+      const subCity = document.createElement("div");
+      body.appendChild(subCity);
+
+      const subCityContent = document.createElement("span");
+      subCity.textContent = "Codice: " + library.libraryCode;
+    }
+
+    if (library.city) {
+      const subCity = document.createElement("div");
+      body.appendChild(subCity);
+
+      const subCityContent = document.createElement("span");
+      subCity.textContent = "Città: " + library.city;
+    }
+
+    return div;
+  },
+
+  async showGenres(elmName, filter) {
+    this.showLoader(elmName);
+
+    let data = await this.getData("/genres");
+
+    data = data.map(genre => {
+      let results = [];
+      if (filter) {
+        results = SearchSettings.filterGenre(genre, filter);
+      }
+
+      return { genre, results, }
+    });
+
+    if (filter) {
+      data = data.filter(genre => genre.results.length !== 0);
+    }
+
+    const elm = document.getElementById(elmName);
+    this.removeContent(elm);
+
+    const pageData = this.reducePagination(data);
+    pageData.data.forEach(genre => this.showGenre(elm, genre));
+    this.showPagination(pageData);
+  },
+
+  showGenre(elm, genre) {
+    const b = this.blockGenre(genre.genre, genre.results);
+    elm.appendChild(b);
+  },
+
+  blockGenre(genre, results) {
+    const div = document.createElement('div');
+    div.setAttribute('class', 'row');
+
+    const col = document.createElement('div');
+    col.setAttribute('class', 'col');
+    div.appendChild(col);
+
+    const card = document.createElement('div');
+    card.setAttribute('class', 'card');
+    col.appendChild(card);
+
+    const body = document.createElement('div');
+    body.setAttribute('class', 'card-body');
+    card.appendChild(body);
+
+    const title = document.createElement('h5');
+    body.appendChild(title);
+
+    const anchor = document.createElement('a');
+    anchor.href = this.baseurl + "/genre?id=" + genre.id;
+    anchor.appendChild(document.createTextNode(genre.genre));
+    title.appendChild(anchor);
+
+    return div;
+  },
+
+  async showLanguages(elmName, filter) {
+    this.showLoader(elmName);
+
+    let data = await this.getData("/languages");
+
+    data = data.map(language => {
+      let results = [];
+      if (filter) {
+        results = SearchSettings.filterLanguage(language, filter);
+      }
+
+      return { language, results, }
+    });
+
+    if (filter) {
+      data = data.filter(language => language.results.length !== 0);
+    }
+
+    const elm = document.getElementById(elmName);
+    this.removeContent(elm);
+
+    const pageData = this.reducePagination(data);
+    pageData.data.forEach(language => this.showLanguage(elm, language));
+    this.showPagination(pageData);
+  },
+
+  showLanguage(elm, language) {
+    const b = this.blockLanguage(language.language, language.results);
+    elm.appendChild(b);
+  },
+
+  blockLanguage(language, results) {
+    const div = document.createElement('div');
+    div.setAttribute('class', 'row');
+
+    const col = document.createElement('div');
+    col.setAttribute('class', 'col');
+    div.appendChild(col);
+
+    const card = document.createElement('div');
+    card.setAttribute('class', 'card');
+    col.appendChild(card);
+
+    const body = document.createElement('div');
+    body.setAttribute('class', 'card-body');
+    card.appendChild(body);
+
+    const title = document.createElement('h5');
+    body.appendChild(title);
+
+    const anchor = document.createElement('a');
+    anchor.href = this.baseurl + "/language?id=" + language.id;
+    anchor.appendChild(document.createTextNode(language.language));
+    title.appendChild(anchor);
+
+    return div;
+  },
+
   async showWorks(elmName, filter) {
     this.showLoader(elmName);
 
@@ -650,6 +860,7 @@ const Biflow = {
     const b = this.blockWork(work.work, work.results);
     elm.appendChild(b);
   },
+
   //Visualise the full work
   async showFullWork(id) {
     // Let's show the loading for any active part of the page.
@@ -944,9 +1155,24 @@ const Biflow = {
     for (let i = 0; i < data.genres.length; ++i) {
       // This is the genre.
       const genreData = await this.getDataWithFullPath(data.genres[i]);
-      genres.push(genreData.genre);
+
+      if (i > 0) {
+        genres.push(document.createTextNode(", "));
+      }
+
+      const anchor = document.createElement("a");
+      anchor.title = genreData.genre;
+      anchor.textContent = genreData.genre;
+      anchor.href = this.baseurl + "/genre?id=" + genreData.id;
+      genres.push(anchor);
     }
-    document.getElementById("workGenres").textContent = genres.join(", ");
+
+    const elm = document.getElementById("workGenres");
+    this.removeContent(elm);
+
+    genres.forEach(genre => {
+      elm.appendChild(genre);
+    });
   },
 
   async showWorkAttributions(data) {
@@ -979,6 +1205,98 @@ const Biflow = {
     });
 
     this.maybeCreateCard("workBody", "Altre Attribuzioni", ul);
+  },
+
+  async showFullLibrary(id) {
+    ["libraryCity", "libraryCode" ].forEach(elmName => this.showLoader(elmName));
+
+    const data = await this.getData("/libraries/" + id);
+
+    document.getElementById("libraryMainTitle").textContent = data.libraryName;
+    document.getElementById("libraryCity").textContent = data.city;
+    document.getElementById("libraryCode").textContent = data.libraryCode;
+
+    await this.showLibraryManuscripts(data.manuscripts);
+  },
+
+  async showLibraryManuscripts(list) {
+    if (list.length === 0) {
+      return;
+    }
+
+    const ul = document.createElement("ul");
+    ul.setAttribute("class", "list-group list-group-flush");
+
+    for (let i = 0; i < list.length; ++i) {
+      const manuscript = await this.getDataWithFullPath(list[i]);
+
+      const li = document.createElement("li");
+      li.setAttribute("class", "list-group-item list-group-item-action");
+      ul.appendChild(li);
+
+      const div = document.createElement('div');
+      li.appendChild(div);
+
+      div.appendChild(document.createTextNode("Manoscritto: "));
+      let anchor = document.createElement('a');
+      anchor.href = this.baseurl + "/manuscript?id=" + manuscript.id;
+      anchor.appendChild(document.createTextNode(manuscript.shelfMark));
+      div.appendChild(anchor);
+    }
+
+    this.maybeCreateCard("libraryBody", "Manoscritti", ul);
+  },
+
+  async showFullGenre(id) {
+    const data = await this.getData("/genres/" + id);
+
+    document.getElementById("genreMainTitle").textContent = data.genre;
+    await this.showGenreWorksCard(data.works, "Schede");
+  },
+
+  // Show a list of expressions
+  async showGenreWorksCard(list, elmName) {
+    if (list.length == 0) {
+      return;
+    }
+
+    const works = [];
+
+    for (let i = 0; i < list.length; ++i) {
+      const work = await this.getDataWithFullPath(list[i]);
+      works.push(work);
+    }
+
+    const ul = document.createElement("ul");
+    ul.setAttribute("class", "list-group list-group-flush");
+
+    works.forEach(work => {
+      //show a single work.
+      const li = document.createElement("li");
+      li.setAttribute("class", "list-group-item list-group-item-action");
+      ul.appendChild(li);
+
+      const div = document.createElement('div');
+      li.appendChild(div);
+
+      div.appendChild(document.createTextNode("Codice: "));
+
+      const anchor = document.createElement('a');
+      anchor.href = this.baseurl + "/work?id=" + work.id;
+      anchor.appendChild(document.createTextNode(work.code));
+      div.appendChild(anchor);
+    });
+
+    this.maybeCreateCard("genreBody", "Schede", ul);
+  },
+
+  async showFullLanguage(id) {
+    const data = await this.getData("/languages/" + id);
+
+    document.getElementById("languageMainTitle").textContent = data.language;
+
+    await this.showExpressionsCard(data.expressions, "languageBody", "Versioni");
+    await this.showExpressionsCard(data.otherExpressions, "languageBody", "Versioni multi-lingua");
   },
 
   async showFullManuscript(id) {
@@ -1052,11 +1370,18 @@ const Biflow = {
 
   async showManuscriptLibrary(data) {
     const library = await this.getDataWithFullPath(data.library);
-    document.getElementById("manuscriptLibrary").textContent = `
+    const anchor = document.createElement("a");
+    anchor.textContent = `
       Città: ${library.city} -
       Nome: ${library.libraryName} -
       Codice: ${library.libraryCode}
     `;
+    anchor.title = anchor.textContent;
+    anchor.href = this.baseurl + "/library?id=" + library.id;
+
+    const elm = document.getElementById("manuscriptLibrary");
+    this.removeContent(elm);
+    elm.appendChild(anchor);
   },
 
   async showManuscriptMaterial(data) {
@@ -1255,7 +1580,15 @@ const Biflow = {
 
   async showExpressionLanguage(data) {
     const language = await this.getDataWithFullPath(data.language);
-    document.getElementById("expressionLanguage").textContent = language.language;
+
+    const elm = document.getElementById("expressionLanguage");
+    this.removeContent(elm);
+
+    const anchor = document.createElement("a");
+    anchor.title = language.language;
+    anchor.textContent = language.language;
+    anchor.href = this.baseurl + "/language?id=" + language.id;
+    elm.appendChild(anchor);
   },
 
   async showExpressionOtherLanguages(data) {
@@ -1263,10 +1596,23 @@ const Biflow = {
 
     for (let i = 0; i < data.otherLanguages.length; ++i) {
       const language = await this.getDataWithFullPath(data.otherLanguages[i]);
-      languages.push(language.language);
+
+      if (i > 0) {
+        languages.push(document.createTextNode(", "));
+      }
+
+      const anchor = document.createElement("a");
+      anchor.title = language.language;
+      anchor.textContent = language.language;
+      anchor.href = this.baseurl + "/language?id=" + language.id;
+
+      languages.push(anchor);
     }
 
-    document.getElementById("expressionOtherLanguages").textContent = languages.join(", ");
+    const elm = document.getElementById("expressionOtherLanguages");
+    this.removeContent(elm);
+
+    languages.forEach(language => elm.appendChild(language));
   },
 
   async showExpressionWork(data) {

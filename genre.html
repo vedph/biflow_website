@@ -1,0 +1,25 @@
+---
+layout: page
+---
+
+<div class="grigio_ar">
+  <div class="container">
+    <h1 id="genreMainTitle">Loading</h1>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col" id="genreBody">
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+const searchParams = new URLSearchParams(window.location.search);
+const id = searchParams.get("id");
+
+Biflow.showFullGenre(id);
+
+</script>
