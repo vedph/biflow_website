@@ -911,20 +911,21 @@ const Biflow = {
 
     // Diagram.
     const dots = [];
-    dots.push("graph {");
+    dots.push("digraph {");
+    dots.push("node [shape=egg,style=filled,fillcolor=\"#2281c140\",fontname=\"Sans\",margin=0.2];");
     dots.push("rankdir=LR;");
     expressions.forEach(e => {
-      dots.push(`"${e.code}" [URL="${this.baseurl}/expression?id=${e.id}", color="blue"]`);
+      dots.push(`"${e.code}" [URL="${this.baseurl}/expression?id=${e.id}"];`);
       e.derivedFromExpressions.forEach(de => {
         const id = parseInt(de.substr(de.lastIndexOf("/") +1), 10);
         de = expressions.find(ee => ee.id === id);
-        dots.push(`"${de.code}" -- "${e.code}";`);
+        dots.push(`"${de.code}" -> "${e.code}";`);
       });
     });
     dots.push("}");
 
     const url = new URL("https://mizar.unive.it/catalogo_biflow/graphviz/");
-    url.searchParams.set("dot", dots.join(""));
+    url.searchParams.set("dot", btoa(dots.join("")));
 
     const svg = await fetch(url).then(r => r.text());
     //End Diagram
