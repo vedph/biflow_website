@@ -911,7 +911,7 @@ const Biflow = {
 
     // Diagram.
     const dots = [];
-    dots.push("digraph {");
+    dots.push(`digraph "${data.code}" {`);
     dots.push("node [shape=egg,style=filled,fillcolor=\"#2281c140\",fontname=\"Sans\",margin=0.2];");
     dots.push("rankdir=LR;");
     expressions.forEach(e => {
