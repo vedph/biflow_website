@@ -1,88 +1,83 @@
 <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-white">
-	<div class="container">	
+  <div class="container">
 
-		<div class="navbar-header mr-auto">
-			<a id="logo-sito"  class="navbar-brand logo-mobile d-md-none" href="https://www.unive.it/">
-				<img alt="logo unive.it" class="img-responsive" src="{{ site.baseurl }}/unive/img/CF_moeca_pos_124.png">
-			</a>
-			<span class="navbar-brand logo-mobile d-md-none" >
-				<small><a href="//www.unive.it/"><small>Università<br />Ca' Foscari<br />Venezia</Small></a><br></small>
-			</span>			
-		</div>
-        
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#search-collapse" aria-controls="search-collapse" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="glyphicon glyphicon-search" aria-hidden="true" style="font-size:1.5rem; line-height: 1;" ></span>
-		</button>
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		
+    <div class="navbar-header mr-auto">
+      <a id="logo-sito"  class="navbar-brand logo-mobile d-md-none" href="https://www.unive.it/">
+        <img alt="logo unive.it" class="img-responsive" src="{{ site.baseurl }}/unive/img/CF_moeca_pos_124.png">
+      </a>
+      <span class="navbar-brand logo-mobile d-md-none" >
+        <small><a href="//www.unive.it/"><small>Università<br />Ca' Foscari<br />Venezia</Small></a><br></small>
+      </span>
+    </div>
 
-		<div class="collapse navbar-collapse" id="navbarContent">
-        
-			<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-				<li class="nav-item"><a href="{{site.baseurl}}/" class="nav-link">Home</a></li>
-				<li class="nav-item"><a href="{{site.baseurl}}/about" class="nav-link">About</a></li>
-				<li class="nav-item dropdown"><a href="{{site.baseurl}}/team" class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Search</a>
-                                  <div class="dropdown-menu" aria-labelledby="searchDropdown">
-                                    <a class="dropdown-item" href="{{site.baseurl}}/works">Schede</a>
-                                    <a class="dropdown-item" href="{{site.baseurl}}/manuscripts">Manoscritti</a>
-                                    <a class="dropdown-item" href="{{site.baseurl}}/people">Persone</a>
-                                    <a class="dropdown-item" href="{{site.baseurl}}/languages">Lingue</a>
-                                    <a class="dropdown-item" href="{{site.baseurl}}/genres">Generi e Tematiche</a>
-                                    <a class="dropdown-item" href="{{site.baseurl}}/libraries">Biblioteche</a>
-                                  </div>
-                                </li>
-				<li class="nav-item"><a href="{{site.baseurl}}/team" class="nav-link">Team</a></li>
-				<li class="nav-item"><a href="{{site.baseurl}}/pubblicazioni" class="nav-link">Pubblicazioni</a></li>
-				<li class="nav-item"><a href="https://biflow.hypotheses.org/" class="nav-link">Eventi-Blog</a></li>
-			</ul>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#search-collapse" aria-controls="search-collapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="glyphicon glyphicon-search" aria-hidden="true" style="font-size:1.5rem; line-height: 1;" ></span>
+    </button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-			<ul class="navbar-nav d-none d-lg-flex">				
-				<li class="nav-item dropdown">
-				    
-				    <a class="nav-link dropdown-toggle" href="#" id="ricercaDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">    
-						<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-					</a>
-					
-					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="ricercaDropdown">
-						<div class="nav-ricerca tendina">
-							<form name="search"  method="get" action="//www.unive.it/data/search" role="search">
-  
-                              <div class="input-group input-group-lg">
-                                <input type="text" class="form-control" placeholder="cerca in Unive.it" name="q" title="cerca">
-                                <div class="input-group-append">
-                                  <button class="btn btn-outline-secondary" type="submit"><span class="glyphicon glyphicon-search"></span></button>
-                                </div>
-                              </div><!-- /input-group -->
-                              
-                            </form>
-						</div>   
-					</div>
-				</li>
-			</ul>
-		</div>
-		
+    <div class="collapse navbar-collapse" id="navbarContent">
 
-		<div class="collapse search-collapse d-lg-none" id="search-collapse">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item"><a href="{{site.baseurl}}/" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="{{site.baseurl}}/about" class="nav-link">About</a></li>
+        <li class="nav-item dropdown"><a href="{{site.baseurl}}/team" class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Search</a>
+          <div class="dropdown-menu" aria-labelledby="searchDropdown">
+            <a class="dropdown-item" href="{{site.baseurl}}/works">Schede</a>
+            <a class="dropdown-item" href="{{site.baseurl}}/manuscripts">Manoscritti</a>
+            <a class="dropdown-item" href="{{site.baseurl}}/people">Persone</a>
+            <a class="dropdown-item" href="{{site.baseurl}}/languages">Lingue</a>
+            <a class="dropdown-item" href="{{site.baseurl}}/genres">Generi e Tematiche</a>
+            <a class="dropdown-item" href="{{site.baseurl}}/libraries">Biblioteche</a>
+          </div>
+        </li>
+        <li class="nav-item"><a href="{{site.baseurl}}/team" class="nav-link">Team</a></li>
+        <li class="nav-item"><a href="{{site.baseurl}}/pubblicazioni" class="nav-link">Pubblicazioni</a></li>
+        <li class="nav-item"><a href="https://biflow.hypotheses.org/" target="_blank" class="nav-link">Eventi-Blog</a></li>
+      </ul>
 
-			<div class="nav-ricerca d-lg-none">
-				<form name="search"  method="get" action="//www.unive.it/data/search" role="search">
-  
-                  <div class="input-group input-group-lg">
-                    <input type="text" class="form-control" placeholder="cerca in Unive.it" name="q" title="cerca">
-                    <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" type="submit"><span class="glyphicon glyphicon-search"></span></button>
-                    </div>
-                  </div><!-- /input-group -->
-                
-                  
-                </form>
+      <ul class="navbar-nav d-none d-lg-flex">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="ricercaDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+          </a>
 
-			</div>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="ricercaDropdown">
+            <div class="nav-ricerca tendina">
+              <form name="search"  method="get" action="//www.unive.it/data/search" role="search">
 
-		</div>
-		
-	</div>
+                <div class="input-group input-group-lg">
+                  <input type="text" class="form-control" placeholder="cerca in Unive.it" name="q" title="cerca">
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                  </div>
+                </div><!-- /input-group -->
+
+              </form>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+
+    <div class="collapse search-collapse d-lg-none" id="search-collapse">
+
+      <div class="nav-ricerca d-lg-none">
+        <form name="search"  method="get" action="//www.unive.it/data/search" role="search">
+
+           <div class="input-group input-group-lg">
+             <input type="text" class="form-control" placeholder="cerca in Unive.it" name="q" title="cerca">
+             <div class="input-group-append">
+               <button class="btn btn-outline-secondary" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+             </div>
+           </div><!-- /input-group -->
+
+         </form>
+      </div>
+
+    </div>
+
+  </div>
 </nav>
-
