@@ -1,0 +1,57 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <title>BiFlow SPARQL query editor</title>
+  <link rel="stylesheet" href="./css/rdfstore_frontend.css">
+  <link rel="stylesheet" href="./css/ui-lightness/jquery-ui-1.8.14.custom.css">
+
+  <!-- All JavaScript at the bottom, except for Modernizr which
+  enables HTML5 elements & feature detects -->
+  <script type='text/javascript' src="./js/jquery.min.js"></script>
+  <script type='text/javascript' src='./js/jquery-ui.min.js'></script>
+  <script type='text/javascript' src='./js/jquery.tmpl.js'></script>
+  <script type='text/javascript' src='./rdfstore.js'></script>
+  <script type='text/javascript' src='./js/rdfquery.js'></script>
+  <script type='text/javascript' src='./js/knockout-1.2.1.js'></script>
+  <script type='text/javascript' src='./js/rdfstore_frontend.js'></script>
+</head>
+
+<body>
+  <h1>Biflow catalogue - SPARQL editor</h1>
+  <p id="status"></p>
+  <div id='target'>
+  </div>
+</body>
+
+<script type='text/javascript'>
+async function run() {
+  const log = document.getElementById("status");
+  log.textContent = "Loading resource...";
+
+  const r = await fetch("https://mizar.unive.it/catalogo_biflow/rdf/sparql.php")
+  log.textContent = "Parsing resource...";
+  const data = await r.json();
+
+  rdfstore.create({
+    communication: {
+      parsers: {},
+      precedences: ["text/n3", "text/turtle", "application/rdf+xml", "text/html", "application/json"] }
+    },
+    (err, store) => {
+      let id = 0;
+      function next() {
+        log.textContent = `Importing data ${id}/${data.length}`;
+        if (id >= data.length) {
+          frontend = new rdfstore_frontend('#target',store);
+          return;
+        }
+
+        store.execute(data[id++], next);
+      }
+      next();
+    });
+}
+
+run();
+</script>
+</html>
