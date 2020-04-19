@@ -82,6 +82,10 @@ div.grigio_ar figure {
 div.grigio_ar .divider-invisibile-doppio{
 	margin-bottom: 4rem;
 }
+
+p {
+	text-align: justify;
+}
 /*******************************************************/
 /*						numeri		 		      	   */
 /*******************************************************/
@@ -111,3 +115,4 @@ div.grigio_ar .divider-invisibile-doppio{
 .workDiagram {
   text-align: center;
 }
+\
