@@ -483,6 +483,7 @@ const FilterSettings = {
 
 const Biflow = {
   URL: "https://mizar.unive.it",
+  RDFEndpoint: "http://mizar.unive.it/catalogo_biflow/rdf",
   path: "/catalogo_biflow/api/public/api",
 
   itemsPerPage: 10,
@@ -864,7 +865,7 @@ const Biflow = {
   //Visualise the full work
   async showFullWork(id) {
     // Let's show the loading for any active part of the page.
-    ["workCode", "workCodeDownload", "workTitle", "workGenres",
+    ["workCode", "workTitle", "workGenres",
      "workAuthor"].forEach(elmName => this.showLoader(elmName));
 
     // it gets the data from the server
@@ -875,9 +876,10 @@ const Biflow = {
     document.getElementById("workCode").textContent = data.code;
 
     const downloadAnchor = document.getElementById("workCodeDownload");
-    downloadAnchor.textContent = data.code;
-    downloadAnchor.title = data.code;
     downloadAnchor.href = "worktoprint.html?id=" + data.id;
+
+    const rdfAnchor = document.getElementById("workRDF");
+    rdfAnchor.href = this.RDFEndpoint + "/works/" + data.id;
 
     // show the complex elements: elements connected to other elements.
     this.showWorkAuthor(data);
@@ -1301,7 +1303,7 @@ const Biflow = {
 
   async showFullManuscript(id) {
     // Let's show the loading for any active part of the page.
-    ["manuscriptShelfMark", "manuscriptDate", "manuscriptLibrary", "manuscriptMaterial", "manuscriptShelfMarkDownload", "manuscriptTypology" ]
+    ["manuscriptShelfMark", "manuscriptDate", "manuscriptLibrary", "manuscriptMaterial", "manuscriptTypology" ]
       .forEach(elmName => this.showLoader(elmName));
 
     const data = await this.getData("/manuscripts/" + id);
@@ -1309,9 +1311,10 @@ const Biflow = {
 
     //setting the download link anchor (manuscript.html)
     const downloadAnchor = document.getElementById("manuscriptShelfMarkDownload");
-    downloadAnchor.textContent = data.shelfMark;
-    downloadAnchor.title = data.shelfMark;
     downloadAnchor.href = "manuscripttoprint.html?id=" + data.id;
+
+    const rdfAnchor = document.getElementById("manuscriptRDF");
+    rdfAnchor.href = this.RDFEndpoint + "/manuscripts/" + data.id;
 
     // The simple elements.
     document.getElementById("manuscriptMainTitle").textContent = library.libraryCode + ", " + data.shelfMark;
