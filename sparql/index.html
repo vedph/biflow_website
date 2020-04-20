@@ -32,21 +32,32 @@ async function run() {
   log.textContent = "Parsing resource...";
   const data = await r.json();
 
+  const total = data.length;
+  const chunk = 400;
+  let id = 0;
+
   rdfstore.create({
     communication: {
       parsers: {},
       precedences: ["text/n3", "text/turtle", "application/rdf+xml", "text/html", "application/json"] }
     },
     (err, store) => {
-      let id = 0;
       function next() {
-        log.textContent = `Importing data ${id}/${data.length}`;
-        if (id >= data.length) {
+        if (id >= total) {
+          log.textContent = "";
           frontend = new rdfstore_frontend('#target',store);
           return;
         }
 
-        store.execute(data[id++], next);
+        log.textContent = `Importing data ${Math.floor(id * 100 / data.length)}%`;
+        const array = data.slice(id, id + chunk);
+        id += chunk;
+
+        let query = "PREFIX biflow: <http://tmancinelli.github.io/biflow/0.1#>\nINSERT DATA {\n";
+        query += array.join("\n");
+        query += "}";
+
+        store.execute(query, next);
       }
       next();
     });
