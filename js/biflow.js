@@ -1215,6 +1215,9 @@ const Biflow = {
 
     const data = await this.getData("/libraries/" + id);
 
+    const rdfAnchor = document.getElementById("libraryRDF");
+    rdfAnchor.href = this.RDFEndpoint + "/libraries/" + data.id;
+
     document.getElementById("libraryMainTitle").textContent = data.libraryName;
     document.getElementById("libraryCity").textContent = data.city;
     document.getElementById("libraryCode").textContent = data.libraryCode;
@@ -1252,6 +1255,9 @@ const Biflow = {
 
   async showFullGenre(id) {
     const data = await this.getData("/genres/" + id);
+
+    const rdfAnchor = document.getElementById("genreRDF");
+    rdfAnchor.href = this.RDFEndpoint + "/genres/" + data.id;
 
     document.getElementById("genreMainTitle").textContent = data.genre;
     await this.showGenreWorksCard(data.works, "Schede");
@@ -1295,6 +1301,9 @@ const Biflow = {
 
   async showFullLanguage(id) {
     const data = await this.getData("/languages/" + id);
+
+    const rdfAnchor = document.getElementById("languageRDF");
+    rdfAnchor.href = this.RDFEndpoint + "/languages/" + data.id;
 
     document.getElementById("languageMainTitle").textContent = data.language;
 
@@ -1415,6 +1424,9 @@ const Biflow = {
       .forEach(elmName => this.showLoader(elmName));
 
     const data = await this.getData("/people/" + id);
+
+    const rdfAnchor = document.getElementById("personRDF");
+    rdfAnchor.href = this.RDFEndpoint + "/people/" + data.id;
 
     // The simple elements.
     document.getElementById("personMainTitle").textContent = data.name;
@@ -1557,6 +1569,9 @@ const Biflow = {
       .forEach(elmName => this.showLoader(elmName));
 
     const data = await this.getData("/expressions/" + id);
+
+    const rdfAnchor = document.getElementById("expressionRDF");
+    rdfAnchor.href = this.RDFEndpoint + "/expressions/" + data.id;
 
     // The simple elements.
     document.getElementById("expressionMainTitle").textContent = data.code;

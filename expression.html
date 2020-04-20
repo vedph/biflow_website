@@ -11,47 +11,62 @@ layout: page
 <div class="container">
   <div class="row">
     <div class="col" id="expressionBody">
+      <div class="row">
+        <div class="col-md-8">   
+          <div class="w-100 divider-invisibile"></div>
 
-      <div class="table-responsive">
-        <table class="table table-borderless">
-          <tbody>
-            <tr>
-              <th scope="row">Code</th>
-              <td id="expressionCode"></td>
-            </tr>
-            <tr>
-              <th scope="row">Date</th>
-              <td id="expressionDate"></td>
-            </tr>
-            <tr>
-              <th scope="row">Titolo</th>
-              <td id="expressionTitle"></td>
-            </tr>
-            <tr>
-              <th scope="row">Lingua</th>
-              <td id="expressionLanguage"></td>
-            </tr><tr>
-              <th scope="row">Altre lingue</th>
-              <td id="expressionOtherLanguages"></td>
-            </tr>
-            <tr>
-              <th scope="row">Scheda</th>
-              <td id="expressionWork"></td>
-            </tr>
-            <tr>
-              <th scope="row">Traduttore</th>
-              <td id="expressionTranslator"></td>
-            </tr>
-            <tr>
-              <th scope="row">Derivata da</th>
-              <td id="expressionDerivedFrom"></td>
-            </tr>
-            <tr>
-              <th scope="row">Tipologia testuale</th>
-              <td id="expressionTextualTypology"></td>
-            </tr>
-          </tbody>
-        </table>
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Codice</dt>
+            <dd class="col-sm-9" id="expressionCode"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Data</dt>
+            <dd class="col-sm-9" id="expressionDate"></dd>
+          </dl>
+ 
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Titolo</dt>
+            <dd class="col-sm-9" id="expressionTitle"></dd>
+          </dl>
+
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Lingua</dt>
+            <dd class="col-sm-9" id="expressionLanguage"></dd>
+          </dl>
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Altre lingue</dt>
+            <dd class="col-sm-9" id="expressionOtherLanguages"></dd>
+          </dl>
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Scheda</dt>
+            <dd class="col-sm-9" id="expressionWork"></dd>
+          </dl>
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Traduttore</dt>
+            <dd class="col-sm-9" id="expressionTranslator"></dd>
+          </dl>
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Derivata da</dt>
+            <dd class="col-sm-9" id="expressionDerivedFrom"></dd>
+          </dl>
+          <dl class="row riga-bt">
+            <dt class="col-sm-3">Tipologia testuale</dt>
+            <dd class="col-sm-9" id="expressionTextualTypology"></dd>
+          </dl>         
+        </div>
+
+        <div class="col-md-4">                    
+          <div class="card uploads">
+            <div class="card-header">Scarica altri formati</div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item list-group-item-action">
+                <img src="{{ site.baseurl }}/img/rdf_icon.png" alt="RDF resource" title="RDF resource" width="32">
+                <a href="#" title="" target="_blank" id="expressionRDF">Risorsa RDF</a>
+              </li>
+            </ul> 
+          </div>  
+        </div>
       </div>
     </div>
   </div>
