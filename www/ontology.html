@@ -46,11 +46,12 @@ permalink: /ontology/
                   <p>Questo è un Endpoint chiamato <em>RDF store-js</em>. Potete trovare la repository su <a href="https://github.com/antoniogarrote/rdfstore-js">GitHub - Licensed under the <a href="https://opensource.org/licenses/MIT">MIT License</a>, copyright Antonio Garrote 2011-2015</a></p>
                   <p>Per esempio:</p>
                   <p>Dammi la lista dei nomi delle persone:</p>
-                  <pre>PREFIX biflow: <http://tmancinelli.github.io/biflow/0.1#>
-                  SELECT ?name WHERE {
-                  ?x a biflow:Person ;
-                  biflow:has_name ?name .
-                  }</pre>
+                  <pre>PREFIX biflow: &lt;http://tmancinelli.github.io/biflow/0.1#&gt;
+
+SELECT ?name WHERE {
+  ?x a biflow:Person ;
+     biflow:has_name ?name .
+}</pre>
 
                   <p>Dammi tutti gli autori</p>
                   <pre>PREFIX biflow: <http://tmancinelli.github.io/biflow/0.1#>
