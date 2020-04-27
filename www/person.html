@@ -1,39 +1,40 @@
 ---
 layout: page
+permalink: /person/
 ---
 
 <div class="grigio_ar">
   <div class="container">
-    <h1 id="workMainTitle">Loading</h1>
+    <h1 id="personMainTitle">Loading</h1>
   </div>
 </div>
 
+
 <div class="container">
   <div class="row">
-    <div class="col" id="workBody">
-
+    <div class="col" id="personBody">
       <div class="row">
         <div class="col-md-8">   
           <div class="w-100 divider-invisibile"></div>
 
           <dl class="row riga-bt">
-            <dt class="col-sm-3">Codice</dt>
-            <dd class="col-sm-9" id="workCode"></dd>
+            <dt class="col-sm-3">Nome</dt>
+            <dd class="col-sm-9" id="personName"></dd>
           </dl>
 
           <dl class="row riga-bt">
-            <dt class="col-sm-3">Titolo</dt>
-            <dd class="col-sm-9" id="workTitle"></dd>
+            <dt class="col-sm-3">Nome (forme varianti)</dt>
+            <dd class="col-sm-9" id="personNicknames"></dd>
           </dl>
  
           <dl class="row riga-bt">
-            <dt class="col-sm-3">Autore</dt>
-            <dd class="col-sm-9" id="workAuthor"></dd>
+            <dt class="col-sm-3">Data di Nascita</dt>
+            <dd class="col-sm-9" id="personBirthDate"></dd>
           </dl>
 
           <dl class="row riga-bt">
-            <dt class="col-sm-3">Genere</dt>
-            <dd class="col-sm-9" id="workGenres"></dd>
+            <dt class="col-sm-3">Data di Morte</dt>
+            <dd class="col-sm-9" id="personDeathDate"></dd>
           </dl>
         </div>
 
@@ -42,12 +43,8 @@ layout: page
             <div class="card-header">Scarica altri formati</div>
             <ul class="list-group list-group-flush">
               <li class="list-group-item list-group-item-action">
-                <img src="{{ site.baseurl }}/unive/img/pdf.png" alt="file pdf" title="Anteprima di stampa" width="32">
-                <a href="#" title="" target="_blank" id="workCodeDownload">Anteprima di stampa</a>
-              </li>
-              <li class="list-group-item list-group-item-action">
                 <img src="{{ site.baseurl }}/img/rdf_icon.png" alt="RDF resource" title="RDF resource" width="32">
-                <a href="#" title="" target="_blank" id="workRDF">Risorsa RDF</a>
+                <a href="#" title="" target="_blank" id="personRDF">Risorsa RDF</a>
               </li>
             </ul> 
           </div>  
@@ -62,6 +59,6 @@ layout: page
 const searchParams = new URLSearchParams(window.location.search);
 const id = searchParams.get("id");
 
-Biflow.showFullWork(id);
+Biflow.showFullPerson(id);
 
 </script>

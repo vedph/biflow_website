@@ -1,0 +1,48 @@
+---
+layout: page
+title: Biblioteche
+permalink: /libraries/
+---
+
+<div class="grigio_ar">
+	<div class="container">
+          <h1>{{ page.title }}</h1>
+	</div>
+</div>
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-12 col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <form action="{{ site.baseurl }}/libraries" method="GET">
+            <div class="form-row">
+              <div class="col-md-10">
+                <input type="text" class="form-control" name="filter" id="filter" placeholder="biblioteca">
+              </div>
+              <div class="col-md-2">
+                <button class="btn btn-primary btn-block" id="filterButton" type="submit">filtra</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Lista delle biblioteche</h2>
+
+  <div class="container" id="libraryListContainer"></div>
+
+  {% include pagination.html %}
+
+</div>
+
+<script type="text/javascript">
+
+const filter = new URLSearchParams(location.search).get("filter");
+document.getElementById("filter").value = filter;
+Biflow.showLibraries("libraryListContainer", filter ? filter.toLowerCase() : "");
+
+</script>

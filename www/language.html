@@ -1,16 +1,18 @@
 ---
 layout: page
+permalink: /language/
 ---
 
 <div class="grigio_ar">
   <div class="container">
-    <h1 id="genreMainTitle">Loading</h1>
+    <h1 id="languageMainTitle">Loading</h1>
   </div>
 </div>
 
 <div class="container">
   <div class="row">
-    <div class="col" id="genreBody">
+    <div class="col" id="languageBody">
+
       <div class="row">
         <div class="col-md-8">
         </div>
@@ -21,7 +23,7 @@ layout: page
             <ul class="list-group list-group-flush">
               <li class="list-group-item list-group-item-action">
                 <img src="{{ site.baseurl }}/img/rdf_icon.png" alt="RDF resource" title="RDF resource" width="32">
-                <a href="#" title="" target="_blank" id="genreRDF">Risorsa RDF</a>
+                <a href="#" title="" target="_blank" id="languageRDF">Risorsa RDF</a>
               </li>
             </ul> 
           </div>  
@@ -36,6 +38,6 @@ layout: page
 const searchParams = new URLSearchParams(window.location.search);
 const id = searchParams.get("id");
 
-Biflow.showFullGenre(id);
+Biflow.showFullLanguage(id);
 
 </script>

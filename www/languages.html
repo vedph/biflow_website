@@ -1,6 +1,7 @@
 ---
 layout: page
-title: Generi e Tematiche
+title: Lingue
+permalink: /languages/
 ---
 
 <div class="grigio_ar">
@@ -15,10 +16,10 @@ title: Generi e Tematiche
     <div class="col-12 col-md-12">
       <div class="card">
         <div class="card-body">
-          <form action="{{ site.baseurl }}/genres" method="GET">
+          <form action="{{ site.baseurl }}/languages" method="GET">
             <div class="form-row">
               <div class="col-md-10">
-                <input type="text" class="form-control" name="filter" id="filter" placeholder="genere">
+                <input type="text" class="form-control" name="filter" id="filter" placeholder="lingua">
               </div>
               <div class="col-md-2">
                 <button class="btn btn-primary btn-block" id="filterButton" type="submit">filtra</button>
@@ -30,9 +31,9 @@ title: Generi e Tematiche
     </div>
   </div>
 
-  <h2>Lista dei generi e delle tematiche</h2>
+  <h2>Lista delle lingue utilizzate nei testi</h2>
 
-  <div class="container" id="genreListContainer"></div>
+  <div class="container" id="languageListContainer"></div>
 
   {% include pagination.html %}
 
@@ -42,6 +43,6 @@ title: Generi e Tematiche
 
 const filter = new URLSearchParams(location.search).get("filter");
 document.getElementById("filter").value = filter;
-Biflow.showGenres("genreListContainer", filter ? filter.toLowerCase() : "");
+Biflow.showLanguages("languageListContainer", filter ? filter.toLowerCase() : "");
 
 </script>

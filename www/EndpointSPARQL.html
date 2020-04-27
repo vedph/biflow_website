@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Lingue
+title: Endpoint SPARQL
 ---
 
 <div class="grigio_ar">
@@ -15,10 +15,10 @@ title: Lingue
     <div class="col-12 col-md-12">
       <div class="card">
         <div class="card-body">
-          <form action="{{ site.baseurl }}/languages" method="GET">
+          <form action="{{ site.baseurl }}/genres" method="GET">
             <div class="form-row">
               <div class="col-md-10">
-                <input type="text" class="form-control" name="filter" id="filter" placeholder="lingua">
+                <input type="text" class="form-control" name="filter" id="filter" placeholder="genere">
               </div>
               <div class="col-md-2">
                 <button class="btn btn-primary btn-block" id="filterButton" type="submit">filtra</button>
@@ -30,9 +30,9 @@ title: Lingue
     </div>
   </div>
 
-  <h2>Lista delle lingue utilizzate nei testi</h2>
+  <h2>Lista dei generi e delle tematiche</h2>
 
-  <div class="container" id="languageListContainer"></div>
+  <div class="container" id="genreListContainer"></div>
 
   {% include pagination.html %}
 
@@ -42,6 +42,6 @@ title: Lingue
 
 const filter = new URLSearchParams(location.search).get("filter");
 document.getElementById("filter").value = filter;
-Biflow.showLanguages("languageListContainer", filter ? filter.toLowerCase() : "");
+Biflow.showGenres("genreListContainer", filter ? filter.toLowerCase() : "");
 
 </script>
