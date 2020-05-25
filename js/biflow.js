@@ -1960,7 +1960,7 @@ const Biflow = {
     const title = document.createElement('h5');
     body.appendChild(title);
 
-    title.appendChild(document.createTextNode("Versione"));
+    title.appendChild(document.createTextNode("Versione "));
 
     const anchor = document.createElement('a');
     anchor.href = this.baseurl + "/expression?id=" + expression.id;
