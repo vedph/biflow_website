@@ -1027,7 +1027,7 @@ const Biflow = {
   },
 
   // This method creates a single card if there is something to show.
-  maybeCreateCard(elmName, title, content, extraClass = "") {
+  maybeCreateCard(elmName, title, content, extraClass = "", id = "") {
     if (!content) {
       return;
     }
@@ -1036,6 +1036,9 @@ const Biflow = {
 
     const card = document.createElement("div");
     card.setAttribute("class", "card");
+    if (id) {
+      card.setAttribute("id", id);
+    }
     elm.appendChild(card);
 
     const header = document.createElement("div");
@@ -1168,7 +1171,7 @@ const Biflow = {
     const df = new DocumentFragment();
     await this.addBibliographyItems(df, data.bibliographies);
 
-    this.maybeCreateCard("workBody", "Bibliografia", df);
+    this.maybeCreateCard("workBody", "Bibliografia", df, "", "workBibliographies");
   },
 
   // Bibliographies
@@ -1686,6 +1689,7 @@ const Biflow = {
     this.maybeCreateCard("expressionBody", "Sintesi della tradizione manoscritta", data.manuscriptTradition);
     await this.showLocalisationsCard(data.localisations, "expressionBody", "Tradizione manoscritta");
     await this.showExpressionsCard(data.derivedExpressions, "expressionBody", "Espressioni derivate");
+    await this.showExpressionBibliography(data);
   },
 
   async showExpressionLanguage(data) {
@@ -1723,6 +1727,14 @@ const Biflow = {
     this.removeContent(elm);
 
     languages.forEach(language => elm.appendChild(language));
+  },
+
+  async showExpressionBibliography(data) {
+    const work = await this.getDataWithFullPath(data.work);
+
+    this.maybeCreateCard("expressionBody", "Bibliografia", `
+      Vedi bibliografia della scheda <a href="${this.baseurl}/work?id=${work.id}#workBibliographies">${work.code}</a>
+    `);
   },
 
   async showExpressionWork(data) {
