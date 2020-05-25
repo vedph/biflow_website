@@ -1,3 +1,99 @@
+const Sort = {
+  sortManuscripts(data, libraries) {
+    return data.sort((a, b) => {
+      if (a.results[0].priority > b.results[0].priority) {
+        return true;
+      }
+
+      if (b.results[0].priority > a.results[0].priority) {
+        return false;
+      }
+
+      const libraryCodeIdA = parseInt(a.manuscript.library.substr(a.manuscript.library.lastIndexOf("/") + 1), 10);
+      const libraryA = libraries.find(library => library.id == libraryCodeIdA);
+
+      const libraryCodeIdB = parseInt(b.manuscript.library.substr(b.manuscript.library.lastIndexOf("/") + 1), 10);
+      const libraryB = libraries.find(library => library.id == libraryCodeIdB);
+
+      if (libraryA.libraryCode !== libraryB.libraryCode) {
+        return libraryA.libraryCode.toLowerCase() > libraryB.libraryCode.toLowerCase();
+      }
+
+      return a.manuscript.shelfMark.toLowerCase() > b.manuscript.shelfMark.toLowerCase();
+    });
+  },
+
+  sortPeople(data) {
+    return data.sort((a, b) => {
+      if (a.results[0].priority > b.results[0].priority) {
+        return true;
+      }
+
+      if (b.results[0].priority > a.results[0].priority) {
+        return false;
+      }
+
+      return a.person.name.toLowerCase() > b.person.name.toLowerCase();
+    });
+  },
+
+  sortWorks(data) {
+    return data.sort((a, b) => {
+      if (a.results[0].priority > b.results[0].priority) {
+        return true;
+      }
+
+      if (b.results[0].priority > a.results[0].priority) {
+        return false;
+      }
+
+      return a.work.code.toLowerCase() > b.work.code.toLowerCase();
+    });
+  },
+
+  sortGenres(data) {
+    return data.sort((a, b) => {
+      if (a.results[0].priority > b.results[0].priority) {
+        return true;
+      }
+
+      if (b.results[0].priority > a.results[0].priority) {
+        return false;
+      }
+
+      return a.genre.genre.toLowerCase() > b.genre.genre.toLowerCase();
+    });
+  },
+
+  sortLibraries(data) {
+    return data.sort((a, b) => {
+      if (a.results[0].priority > b.results[0].priority) {
+        return true;
+      }
+
+      if (b.results[0].priority > a.results[0].priority) {
+        return false;
+      }
+
+      return a.library.libraryName.toLowerCase() > b.library.libraryName.toLowerCase();
+    });
+  },
+
+  sortLanguages(data) {
+    return data.sort((a, b) => {
+      if (a.results[0].priority > b.results[0].priority) {
+        return true;
+      }
+
+      if (b.results[0].priority > a.results[0].priority) {
+        return false;
+      }
+
+      return a.language.language.toLowerCase() > b.language.language.toLowerCase();
+    });
+  },
+};
+
 const SearchSettings = {
   // ~50 years.
   dateDelta: 50,
@@ -576,7 +672,7 @@ const Biflow = {
     data = data.filter(person => FilterSettings.filter(person, "person"));
 
     data = data.map(person => {
-      let results = [];
+      let results = [{priority: 1}];
       if (filter) {
         results = SearchSettings.filterPerson(person, filter);
       }
@@ -584,9 +680,8 @@ const Biflow = {
       return { person, results, }
     });
 
-    if (filter) {
-      data = data.filter(person => person.results.length !== 0);
-    }
+    data = data.filter(person => person.results.length !== 0);
+    data = Sort.sortPeople(data);
 
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
@@ -612,17 +707,17 @@ const Biflow = {
     data = data.filter(manuscript => FilterSettings.filter(manuscript, "manuscript"));
 
     data = data.map(manuscript => {
-      let results = [];
+      let results = [{priority: 1}];
       if (filter) {
         results = SearchSettings.filterManuscript(manuscript, filter);
       }
 
+      results.sort((a, b) => a.priority > b.priority);
       return { manuscript, results, }
     });
 
-    if (filter) {
-      data = data.filter(manuscript => manuscript.results.length !== 0);
-    }
+    data = data.filter(manuscript => manuscript.results.length !== 0);
+    data = Sort.sortManuscripts(data, libraries);
 
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
@@ -643,7 +738,7 @@ const Biflow = {
     let data = await this.getData("/libraries");
 
     data = data.map(library => {
-      let results = [];
+      let results = [{priority: 1}];
       if (filter) {
         results = SearchSettings.filterLibrary(library, filter);
       }
@@ -651,9 +746,8 @@ const Biflow = {
       return { library, results, }
     });
 
-    if (filter) {
-      data = data.filter(library => library.results.length !== 0);
-    }
+    data = data.filter(library => library.results.length !== 0);
+    data = Sort.sortLibraries(data);
 
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
@@ -717,7 +811,7 @@ const Biflow = {
     let data = await this.getData("/genres");
 
     data = data.map(genre => {
-      let results = [];
+      let results = [{priority: 1}];
       if (filter) {
         results = SearchSettings.filterGenre(genre, filter);
       }
@@ -725,9 +819,8 @@ const Biflow = {
       return { genre, results, }
     });
 
-    if (filter) {
-      data = data.filter(genre => genre.results.length !== 0);
-    }
+    data = data.filter(genre => genre.results.length !== 0);
+    data = Sort.sortGenres(data);
 
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
@@ -775,7 +868,7 @@ const Biflow = {
     let data = await this.getData("/languages");
 
     data = data.map(language => {
-      let results = [];
+      let results = [{priority: 1}];
       if (filter) {
         results = SearchSettings.filterLanguage(language, filter);
       }
@@ -783,9 +876,8 @@ const Biflow = {
       return { language, results, }
     });
 
-    if (filter) {
-      data = data.filter(language => language.results.length !== 0);
-    }
+    data = data.filter(language => language.results.length !== 0);
+    data = Sort.sortLanguages(data);
 
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
@@ -837,7 +929,7 @@ const Biflow = {
     data = data.filter(work => FilterSettings.filter(work, "work"));
 
     data = data.map(work => {
-      let results = [];
+      let results = [{priority: 1}];
       if (filter) {
         results = SearchSettings.filterWork(work, filter);
       }
@@ -845,9 +937,8 @@ const Biflow = {
       return { work, results, }
     });
 
-    if (filter) {
-      data = data.filter(work => work.results.length !== 0);
-    }
+    data = data.filter(work => work.results.length !== 0);
+    data = Sort.sortWorks(data);
 
     const elm = document.getElementById(elmName);
     this.removeContent(elm);
