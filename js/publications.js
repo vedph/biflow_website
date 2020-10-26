@@ -26,83 +26,56 @@ const Publications = {
       elm.appendChild(container);
 
       publications.forEach(publication => {
-         if (publication.category !== "/catalogo_biflow/api/public/api/publication_categories/" + category.id) {
-           return;
-         }
+        if (publication.category !== "/catalogo_biflow/api/public/api/publication_categories/" + category.id) {
+          return;
+        }
 
-         const content = `
-           <div class="card">
-             <div class="row no-gutters">
-               <div class="col-md-12">
-                 <div class="card-body">
-                   <div class="row">
-                     <div class="col">
-                       <div class="col" id="personBody">
-                         <div class="row">
-                           <div class="col-md-12">
-                             <div class="w-100 divider-invisibile"></div>
+        const ul = document.createElement("ul");
+        elm.appendChild(ul);
 
-                             <dl class="row riga-bt">
-                               <dt class="col-sm-4">Autore</dt>
-                               <dd class="col-sm-8">${publication.author}</dd>
-                             </dl>
+        let value = publication.author + ", " +
+                    publication.title;
 
-                             <dl class="row riga-bt">
-                               <dt class="col-sm-4">Capitolo</dt>
-                               <dd class="col-sm-8">${publication.chapter}</dd>
-                             </dl>
+        if (publication.chapter) {
+          value += ", in " + publication.chapter;
+        }
 
-                             <dl class="row riga-bt">
-                               <dt class="col-sm-4">Editor</dt>
-                               <dd class="col-sm-8">${publication.editor}</dd>
-                             </dl>
+        if (publication.journal) {
+          value += ", in " + publication.journal + ", " + publication.journalNumber;
+        }
 
-                             <dl class="row riga-bt">
-                               <dt class="col-sm-4">Volume</dt>
-                               <dd class="col-sm-8">${publication.volume}</dd>
-                             </dl>
+        if (publication.editor) {
+          value += ", a cura di " + publication.editor;
+        }
 
-                             <dl class="row riga-bt">
-                               <dt class="col-sm-4">Posto</dt>
-                               <dd class="col-sm-8">${publication.place}</dd>
-                             </dl>
+        if (publication.place && publication.publisher) {
+          value += ", " + publication.place + ", " + publication.publisher;
 
-                             <dl class="row riga-bt">
-                               <dt class="col-sm-4">Data</dt>
-                               <dd class="col-sm-8">${publication.date}</dd>
-                             </dl>
+          if (publication.date) {
+            value += " (" + publication.date + ")";
+          }
+        }
 
-                             <dl class="row riga-bt">
-                               <dt class="col-sm-4">URL</dt>
-                               <dd class="col-sm-8">${publication.url}</dd>
-                             </dl>
+        if (publication.volume) {
+          value += ", " + publication.volume;
 
-                             <dl class="row riga-bt">
-                               <dt class="col-sm-4">Editore</dt>
-                               <dd class="col-sm-8">${publication.publisher}</dd>
-                             </dl>
+          if (publication.volumeNumber) {
+            value += " - " + publication.volumeNumber;
+          }
+        }
 
-                             <dl class="row riga-bt">
-                               <dt class="col-sm-4">Volume</dt>
-                               <dd class="col-sm-8">${publication.volume}</dd>
-                             </dl>
+        if (publication.pageNumber) {
+          value += ", " + publication.pageNumber;
+        }
 
-                             <dl class="row riga-bt">
-                               <dt class="col-sm-4">Volume numero</dt>
-                               <dd class="col-sm-8">${publication.volumeNumber}</dd>
-                             </dl>
-                           </div>
-                         </div>
-                       </div>
-                     </div>
-                   </div>
-                 </div>
-               </div>
-             </div>
-           </div>`;
+        if (publication.url) {
+          value += ", " + publication.url;
+        }
 
-           elm.innerHTML += content;
-       });
-     });
+        const li = document.createElement("li");
+        li.textContent = value;
+        ul.appendChild(li);
+      });
+    });
   }
 };
