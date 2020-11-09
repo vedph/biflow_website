@@ -1178,12 +1178,23 @@ const Biflow = {
   async addBibliographyItems(df, bibliographies) {
     df.appendChild(document.createElement("br"));
 
+    const bibs = [];
+    for (let i = 0; i < bibliographies.length; ++i) {
+      const bibliography = await Biflow.getDataWithFullPath(bibliographies[i]);
+      bibs.push(bibliography);
+    }
+
+    // Let's order the bibliography entries by codeBibl.
+    bibs.sort((a, b) => {
+      if (a.codeBibl < b.codeBibl) return -1;
+      if (a.codeBibl > b.codeBibl) return 1;
+      return 0;
+    });
+
     const ul = document.createElement("ul");
     df.appendChild(ul);
 
-    for (let i = 0; i < bibliographies.length; ++i) {
-      const bibliography = await Biflow.getDataWithFullPath(bibliographies[i]);
-
+    bibs.forEach(bibliography => {
       let value = bibliography.codeBibl + " = " +
                   bibliography.author + ", " +
                   bibliography.title;
@@ -1231,7 +1242,7 @@ const Biflow = {
       const li = document.createElement("li");
       li.textContent = value;
       ul.appendChild(li);
-    }
+    });
   },
   //end Bibliographies's function
 
