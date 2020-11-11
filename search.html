@@ -24,6 +24,26 @@ permalink: /search/
                 <button class="btn btn-primary btn-block" type="submit">ricerca</button>
               </div>
             </div>
+            <div class="advanced_search card" id="ricerca_avanzata">
+                    <div class="card-header cursore" data-toggle="collapse" href="#collapse-ricerca_avanzata" data-parent="#ricerca_avanzata">
+                        <h4 class="mb-0 card-title">Ricerca avanzata <i class="indicator glyphicon glyphicon-plus float-right"></i></h4>
+                    </div>
+                    <div id="collapse-ricerca_avanzata" class="collapse">
+                      <div class="card-body" id="filterBody">
+                        <h2 class="card-title">Cerca per</h2>
+                        <select class="form-control" name="category">
+                          <option value=""></option>
+                          <option id="search_work" value="work">Schede</option>
+                          <option id="search_manuscript" value="manuscript">Manoscritti</option>
+                          <option id="search_person" value="person">Persone</option>
+                          <option id="search_language" value="language">Lingue</option>
+                          <option id="search_genre" value="genre">Generi e Tematiche</option>
+                          <option id="search_library" value="library">Biblioteche</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
           </form>
         </div>
       </div>
@@ -41,8 +61,16 @@ permalink: /search/
 <script type="text/javascript">
 
 const search = new URLSearchParams(location.search).get("search");
+const category = new URLSearchParams(location.search).get("category");
+
 document.getElementById("search").value = search;
-Biflow.search(search);
+
+let searchCategory = document.getElementById("search_" + category);
+if (searchCategory) {
+  searchCategory.selected = true;
+}
+
+Biflow.search(search, category);
 
 </script>
 

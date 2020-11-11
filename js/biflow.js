@@ -2004,97 +2004,118 @@ const Biflow = {
     elm.textContent = author.name + ", " + this.dedupArray(topLevelExpressions.map(e => e.title)).join(", ");
   },
 
-  async search(search) {
+  async search(search, category) {
     this.showLoader("resultsContainer");
 
     search = search.toLowerCase();
 
-    const people = await this.getData("/people").then(people => people.map(person => {
-      const results = SearchSettings.filterPerson(person, search);
-      if (results.length === 0) {
-        return null;
-      }
+    let people = [];
+    if (!category || category == "person") {
+      people = await this.getData("/people").then(people => people.map(person => {
+        const results = SearchSettings.filterPerson(person, search);
+        if (results.length === 0) {
+          return null;
+        }
 
-      return {
-        elm: this.blockPerson(person, results),
-        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
-      };
-    }).filter(elm => !!elm));
+        return {
+          elm: this.blockPerson(person, results),
+          priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+        };
+      }).filter(elm => !!elm));
+    }
 
-    const works = await this.getData("/works").then(works => works.map(work => {
-      const results = SearchSettings.filterWork(work, search);
-      if (results.length === 0) {
-        return null;
-      }
+    let works = [];
+    if (!category || category == "work") {
+      works = await this.getData("/works").then(works => works.map(work => {
+        const results = SearchSettings.filterWork(work, search);
+        if (results.length === 0) {
+          return null;
+        }
 
-      return {
-        elm: this.blockWork(work, results),
-        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
-      };
-    }).filter(elm => !!elm));
+        return {
+          elm: this.blockWork(work, results),
+          priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+        };
+      }).filter(elm => !!elm));
+    }
 
     // Let's fetch the libraries for the manuscript blocks.
     const libraryData = await this.getData("/libraries");
 
-    const manuscripts = await this.getData("/manuscripts").then(manuscripts => manuscripts.map(manuscript => {
-      const results = SearchSettings.filterManuscript(manuscript, search);
-      if (results.length === 0) {
-        return null;
-      }
+    let manuscripts = [];
+    if (!category || category == "manuscript"){
+      manuscripts = await this.getData("/manuscripts").then(manuscripts => manuscripts.map(manuscript => {
+        const results = SearchSettings.filterManuscript(manuscript, search);
+        if (results.length === 0) {
+          return null;
+        }
 
-      return {
-        elm: this.blockManuscript(manuscript, results, libraryData),
-        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
-      };
-    }).filter(elm => !!elm));
+        return {
+          elm: this.blockManuscript(manuscript, results, libraryData),
+          priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+        };
+      }).filter(elm => !!elm));
+    }
 
-    const expressions = await this.getData("/expressions").then(expressions => expressions.map(expression => {
-      const results = SearchSettings.filterExpression(expression, search);
-      if (results.length === 0) {
-        return null;
-      }
+    let expressions = [];
+    if (!category) {
+      expressions = await this.getData("/expressions").then(expressions => expressions.map(expression => {
+        const results = SearchSettings.filterExpression(expression, search);
+        if (results.length === 0) {
+          return null;
+        }
 
-      return {
-        elm: this.blockExpression(expression, results),
-        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
-      };
-    }).filter(elm => !!elm));
+        return {
+          elm: this.blockExpression(expression, results),
+          priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+        };
+      }).filter(elm => !!elm));
+    }
 
-    const genres = await this.getData("/genres").then(genres => genres.map(genre => {
-      const results = SearchSettings.filterGenre(genre, search);
-      if (results.length === 0) {
-        return null;
-      }
+    let genres = [];
+    if (!category || category == "genre"){
+      genres = await this.getData("/genres").then(genres => genres.map(genre => {
+        const results = SearchSettings.filterGenre(genre, search);
+        if (results.length === 0) {
+         return null;
+        }
 
-      return {
-        elm: this.blockGenre(genre, results),
-        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
-      };
-    }).filter(elm => !!elm));
+        return {
+          elm: this.blockGenre(genre, results),
+          priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+        };
+      }).filter(elm => !!elm));
+    }
 
-    const libraries = await this.getData("/libraries").then(libraries => libraries.map(library => {
-      const results = SearchSettings.filterLibrary(library, search);
-      if (results.length === 0) {
-        return null;
-      }
+    let libraries = [];
+    if (!category || category == "library"){
+      libraries = await this.getData("/libraries").then(libraries => libraries.map(library => {
+        const results = SearchSettings.filterLibrary(library, search);
+        if (results.length === 0) {
+          return null;
+        }
 
-      return {
-        elm: this.blockLibrary(library, results),
-        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
-      };
-    }).filter(elm => !!elm));
+        return {
+          elm: this.blockLibrary(library, results),
+          priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+        };
+      }).filter(elm => !!elm));
+    }
 
-    const languages = await this.getData("/languages").then(languages => languages.map(language => {
-      const results = SearchSettings.filterLanguage(language, search);
-      if (results.length === 0) {
-        return null;
-      }
+    let languages = [];
+    if (!category || category == "language"){
+      languages = await this.getData("/languages").then(languages => languages.map(language => {
+        const results = SearchSettings.filterLanguage(language, search);
+        if (results.length === 0) {
+          return null;
+        }
 
-      return {
-        elm: this.blockLanguage(language, results),
-        priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
-      };
-    }).filter(elm => !!elm));
+        return {
+          elm: this.blockLanguage(language, results),
+          priority: results.sort((a, b) => a.priority > b.priority)[0].priority,
+        };
+      }).filter(elm => !!elm));
+    }
 
     const elm = document.getElementById("resultsContainer");
     this.removeContent(elm);
