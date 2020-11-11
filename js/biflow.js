@@ -1571,8 +1571,15 @@ const Biflow = {
         localisationData.copyist = await this.getDataWithFullPath(localisationData.copyist);
       }
 
+      localisationData.code = "";
+      if (localisationData.library) {
+        localisationData.code = localisationData.library.libraryCode + ", " + localisationData.manuscript.shelfMark;
+      }
+
       localisations.push(localisationData);
     }
+
+    localisations.sort((a, b) => a.code >= b.code);
 
     const ul = document.createElement("ul");
     ul.setAttribute("class", "list-group list-group-flush");
@@ -1589,7 +1596,7 @@ const Biflow = {
         div.appendChild(document.createTextNode("Manoscritto: "));
         let anchor = document.createElement('a');
         anchor.href = this.baseurl + "/manuscript?id=" + localisation.manuscript.id;
-        anchor.appendChild(document.createTextNode(localisation.library.libraryCode + ", " + localisation.manuscript.shelfMark));
+        anchor.appendChild(document.createTextNode(localisation.code));
         div.appendChild(anchor);
         div.appendChild(document.createElement("br"));
       }
