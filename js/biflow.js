@@ -127,6 +127,8 @@ const SearchSettings = {
         cb: this.dateFilter, },
       { field: 'dateDeath', priority: 2, name: "Data di morte",
         cb: this.dateFilter, },
+      { field: 'nickname', priority: 2, name: "Nome (forme varianti)",
+        cb: this.nicknameFilter, },
     ]);
   },
 
@@ -162,11 +164,15 @@ const SearchSettings = {
     let priorities = [];
 
     fields.forEach(field => {
+      let fieldValue;
+
       if (field.cb) {
-        if (!field.cb(what[field.field], filter)) {
-          return;
-        }
-      } else if (what[field.field].toLowerCase().indexOf(filter) === -1) {
+         fieldValue = field.cb(what, field.field, filter);
+      } else if (what[field.field].toLowerCase().indexOf(filter) >= 0) {
+        fieldValue = what[field.field];
+      }
+
+      if (!fieldValue) {
         return;
       }
 
@@ -176,7 +182,7 @@ const SearchSettings = {
 
       if (field.name) {
         result.fieldName = field.name;
-        result.fieldValue = what[field.field];
+        result.fieldValue = fieldValue;
       }
 
       priorities.push(result);
@@ -185,9 +191,31 @@ const SearchSettings = {
     return priorities;
   },
 
-  dateFilter(date, filter) {
+  nicknameFilter(person, field, filter) {
+    const nicknames = person['nicknames'];
+    if (!nicknames) {
+      return null;
+    }
+
+    for (let i = 0; i < nicknames.length; ++i) {
+      const data = Biflow.getCachedDataWithFullPath(nicknames[i]);
+      if (!data) {
+        continue;
+      }
+
+      if (data.nickname.toLowerCase().indexOf(filter) >= 0) {
+        return data.nickname;
+      }
+    }
+
+    return null;
+  },
+
+  dateFilter(obj, field, filter) {
+    const date = obj[field];
+    const dateField = obj[field];
     if (date === "") {
-      return false;
+      return null;
     }
 
     filter = filter.trim();
@@ -207,71 +235,71 @@ const SearchSettings = {
       month = parseInt(parts[1], 10);
       year = parseInt(parts[2], 10);
     } else {
-      return false;
+      return null;
     }
 
     if (date[0] === '>') {
       date = SearchSettings.parseDate(date.substring(1).trim());
       if (!date) {
         console.log("Invalid date in the DB!", date);
-        return false;
+        return null;
       }
 
       if (date.match === '=') {
-        return year >= date.year;
+        return year >= date.year ? dateField : null;
       }
 
       if (date.match === '~') {
-        return (year + SearchSettings.dateDelta) >= date.year;
+        return (year + SearchSettings.dateDelta) >= date.year ? dateField : null;
       }
 
       console.log("Invalid parsing: " + date);
-      return false;
+      return null;
     }
 
     if (date[0] === '<') {
       date = SearchSettings.parseDate(date.substring(1).trim());
       if (!date) {
         console.log("Invalid date in the DB!", date);
-        return false;
+        return null;
       }
 
       if (date.match === '=') {
-        return year <= date.year;
+        return year <= date.year ? dateField : null;
       }
 
       if (date.match === '~') {
-        return (year - SearchSettings.dateDelta) <= date.year;
+        return (year - SearchSettings.dateDelta) <= date.year ? dateField : null;
       }
 
       console.log("Invalid parsing: " + date);
-      return false;
+      return null;
     }
 
     if (!date.includes("<>")) {
       date = SearchSettings.parseDate(date.trim());
       if (!date) {
         console.log("Invalid date in the DB!", date);
-        return false;
+        return null;
       }
 
       if (date.match === '~') {
-        return Math.abs(year - date.year) < SearchSettings.dateDelta;
+        return Math.abs(year - date.year) < SearchSettings.dateDelta ? dateField : null;
       }
 
       if (date.year != year) {
-        return false;
+        return null;
       }
 
       if (month && date.month != month) {
-        return false;
+        return null;
       }
 
       if (day && date.day != day) {
-        return false;
+        return null;
       }
 
-      return true;
+      return dateField;
     }
 
     const parts = date.split("<>").map(a => a.trim());
@@ -280,50 +308,50 @@ const SearchSettings = {
 
     if (!preDate || !postDate) {
       console.log("Invalid date in the DB!", preDate, postDate);
-      return false;
+      return null;
     }
 
     if (preDate.match === '~') {
       if ((year + SearchSettings.dateDelta) < preDate.year) {
-        return false;
+        return null;
       }
     }
 
     if (preDate.match === '=') {
       if (preDate.year >= year) {
-        return false;
+        return null;
       }
 
       if (preDate.year === year && month && preDate.month >= month) {
-        return false;
+        return null;
       }
 
       if (preDate.year === year && month && preDate.month == month && day && preDate.day >= day) {
-        return false;
+        return null;
       }
     }
 
     if (postDate.match === '~') {
       if ((year - SearchSettings.dateDelta) > postDate.year) {
-        return false;
+        return null;
       }
     }
 
     if (postDate.match === '=') {
       if (postDate.year <= year) {
-        return false;
+        return null;
       }
 
       if (postDate.year === year && month && postDate.month <= month) {
-        return false;
+        return null;
       }
 
       if (postDate.year === year && month && postDate.month == month && day && postDate.day <= day) {
-        return false;
+        return null;
       }
     }
 
-    return true;
+    return dateField;
   },
 
   parseDate(date) {
@@ -389,7 +417,7 @@ const FilterSettings = {
       id: "person_date_birth",
       type: "date",
       filter: (person, date) => {
-        return SearchSettings.dateFilter(person.dateBirth, date);
+        return SearchSettings.dateFilter(person, 'dateBirth', date);
       }
     },
     {
@@ -397,7 +425,7 @@ const FilterSettings = {
       id: "person_date_death",
       type: "date",
       filter: (person, date) => {
-        return SearchSettings.dateFilter(person.dateDeath, date);
+        return SearchSettings.dateFilter(person, 'dateDeath', date);
       }
     },
   ],
@@ -435,7 +463,7 @@ const FilterSettings = {
       id: "manuscript_date",
       type: "date",
       filter: (manuscript, date) => {
-        return SearchSettings.dateFilter(manuscript.date, date);
+        return SearchSettings.dateFilter(manuscript, 'date', date);
       },
     }
   ],
@@ -628,6 +656,13 @@ const Biflow = {
     // Let's store it in the cache.
     this.cachedFetchedURLs.set(path, json);
     return json;
+  },
+
+  getCachedDataWithFullPath(path) {
+    if (this.cachedFetchedURLs.has(path)) {
+      return this.cachedFetchedURLs.get(path);
+    }
+    return null;
   },
 
   removeContent(elm) {
