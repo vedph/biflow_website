@@ -1894,7 +1894,7 @@ const Biflow = {
     title.appendChild(anchor);
 
     body.appendChild(document.createTextNode(`
-      Numberi: ${person.works.length} schede,
+      Numeri: ${person.works.length} schede,
       ${person.translations.length} traduzioni,
       ${person.codices.length} codici`));
 
