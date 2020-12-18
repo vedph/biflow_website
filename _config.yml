@@ -1,7 +1,7 @@
 title: Il Catalogo BIFLOW - Toscana bilingue
-baseurl: "/biflow"
+baseurl: ""
 preloadurl: "https://mizar.unive.it/catalogo_biflow/preload.js"
-url: "https://tmancinelli.github.io/biflow_website"
+url: "http://catalogobiflow.vedph.it"
 emails: [antonio.montefusco@unive.it, sara.bischetti@unive.it, tiziana.mancinelli@unive.it]
 
 # Build settings
