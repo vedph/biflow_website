@@ -1002,7 +1002,7 @@ const Biflow = {
     document.getElementById("workCode").textContent = data.code;
 
     const downloadAnchor = document.getElementById("workCodeDownload");
-    downloadAnchor.href = "worktoprint.html?id=" + data.id;
+    downloadAnchor.href = "/worktoprint.html?id=" + data.id;
 
     const rdfAnchor = document.getElementById("workRDF");
     rdfAnchor.href = this.RDFEndpoint + "/works/" + data.id;
@@ -1461,7 +1461,7 @@ const Biflow = {
 
     //setting the download link anchor (manuscript.html)
     const downloadAnchor = document.getElementById("manuscriptShelfMarkDownload");
-    downloadAnchor.href = "manuscripttoprint.html?id=" + data.id;
+    downloadAnchor.href = "/manuscripttoprint.html?id=" + data.id;
 
     const rdfAnchor = document.getElementById("manuscriptRDF");
     rdfAnchor.href = this.RDFEndpoint + "/manuscripts/" + data.id;
