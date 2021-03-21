@@ -33,8 +33,8 @@ const Publications = {
         const ul = document.createElement("ul");
         elm.appendChild(ul);
 
-        let value = publication.author + ", " +
-                    publication.title;
+        let value = publication.author + ", <em>" +
+                    publication.title + "</em>";
 
         if (publication.chapter) {
           value += ", in " + publication.chapter;
@@ -72,8 +72,12 @@ const Publications = {
           value += ", " + publication.url;
         }
 
+	if (publication.abstract) {
+          value += "<div class='abstract'>" + publication.abstract + "</div>";
+	}
+
         const li = document.createElement("li");
-        li.textContent = value;
+        li.innerHTML = value;
         ul.appendChild(li);
       });
     });
