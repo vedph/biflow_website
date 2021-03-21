@@ -1497,8 +1497,15 @@ const Biflow = {
   },
 
   async showManuscriptTypology(data) {
+    const elm = document.getElementById("manuscriptTypology");
+
+    if (!data.typology) {
+      this.removeContent(elm);
+      return;
+    }
+
     const typology = await this.getDataWithFullPath(data.typology);
-    document.getElementById("manuscriptTypology").textContent = typology.typology;
+    elm.textContent = typology.typology;
   },
 
   async showManuscriptCheckStatus(data) {
