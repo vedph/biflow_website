@@ -8,6 +8,21 @@ const Publications = {
     Biflow.removeContent(elm);
 
     categories.forEach(category => {
+      const link = document.createElement("a");
+      link.setAttribute("href", "#" + category.publicationCategory);
+      link.appendChild(document.createTextNode(category.publicationCategory))
+      elm.appendChild(link);
+      const br = document.createElement("br");
+      elm.appendChild(br)
+    }
+      )
+
+    categories.forEach(category => {
+
+      const link = document.createElement("a");
+      link.setAttribute("id", category.publicationCategory);
+      elm.appendChild(link);
+
       const container = document.createElement("div");
       container.setAttribute("class", "container");
 
@@ -35,13 +50,16 @@ const Publications = {
 
         let value = publication.author + ", <em>" +
                     publication.title + "</em>";
-
+        console.log(publication)
         if (publication.chapter) {
           value += ", in " + publication.chapter;
         }
 
         if (publication.journal) {
-          value += ", in " + publication.journal + ", " + publication.journalNumber;
+          value += ", in " + publication.journal;
+          if (publication.journalNumber) {
+            value += ", " + publication.journalNumber;
+          }
         }
 
         if (publication.editor) {
@@ -50,10 +68,10 @@ const Publications = {
 
         if (publication.place && publication.publisher) {
           value += ", " + publication.place + ", " + publication.publisher;
+        }
 
-          if (publication.date) {
-            value += " (" + publication.date + ")";
-          }
+        if (publication.date) {
+          value += " (" + publication.date + ")";
         }
 
         if (publication.volume) {
@@ -69,11 +87,11 @@ const Publications = {
         }
 
         if (publication.url) {
-          value += ", " + publication.url;
+          value += ", " + "<a href=\""+ publication.url + "\">" + publication.url + "</a>"
         }
 
 	if (publication.abstract) {
-          value += "<div class='abstract'>" + publication.abstract + "</div>";
+          value += "<div class='abstract'>" + "<u>" + "Abstract" + "</u>" + ": " + publication.abstract + "</div>";
 	}
 
         const li = document.createElement("li");
