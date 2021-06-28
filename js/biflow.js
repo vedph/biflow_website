@@ -1562,7 +1562,7 @@ const Biflow = {
     }
 
     const ruledLineTechnique = await this.getDataWithFullPath(data.ruledLineTechnique);
-    this.maybeCreateCard("manuscriptBody", "Tecnica di legatura",  ruledLineTechnique.ruledLineTechnique);
+    this.maybeCreateCard("manuscriptBody", "Tecnica di rigatura",  ruledLineTechnique.ruledLineTechnique);
   },
 
   async showFullPerson(id) {
