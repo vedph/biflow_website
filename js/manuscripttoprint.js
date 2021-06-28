@@ -99,7 +99,7 @@ async function generateDocument(manuscriptId) {
 
   await addLocalisations(df, manuscript.localisations);
 
-  maybeAddBlock(df, "Sistema di rigatura:", manuscript.ruledLines);
+  maybeAddBlock(df, "Tipo di rigatura:", manuscript.ruledLines);
   maybeAddBlock(df, "Altezza:", manuscript.height);
   maybeAddBlock(df, "Larghezza:", manuscript.width);
   maybeAddBlock(df, "Storia del codice:", manuscript.history);
