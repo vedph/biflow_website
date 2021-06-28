@@ -188,6 +188,11 @@ function addTitle(df, code) {
   const elm = document.createElement("h1");
   elm.textContent = code;
   df.appendChild(elm);
+  const issn = document.createElement("small");
+  issn.textContent = "ISSN 2784-9406";
+  df.appendChild(issn);
+  df.appendChild(document.createElement("br"));
+  df.appendChild(document.createElement("br"));
 }
 
 function addButton(df) {
