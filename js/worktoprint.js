@@ -82,7 +82,7 @@ async function addExpressionItem(df, expression) {
   maybeAddBlock(df, "Explicit:", expression.explicit);
   maybeAddBlock(df, "Datazione:", expression.date);
   maybeAddBlock(df, "Storia editoriale:", expression.editionHistory);
-  maybeAddBlock(df, "Tradizione manoscritta:", expression.editionHistory);
+  maybeAddBlock(df, "Tradizione manoscritta:", expression.manuscriptTradition);
   maybeAddBlock(df, "Storia testuale:", expression.textualHistory);
 
   if (expression.language) {
