@@ -1490,7 +1490,7 @@ const Biflow = {
     this.maybeCreateCard("manuscriptBody", "Storia del codice", data.history);
     this.maybeCreateCard("manuscriptBody", "Note", data.note);
     await this.showManuscriptCheckStatus(data);
-    await this.showLocalisationsCard(data.localisations, "manuscriptBody", "Localizazione");
+    await this.showLocalisationsCard(data.localisations, "manuscriptBody", "Localizzazione");
     await this.showManuscriptBibliographies(data);
 
     await this.showEditor("manuscriptBody", "Autore della scheda del manoscritto:", data);
