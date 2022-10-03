@@ -212,7 +212,7 @@ const SearchSettings = {
   },
 
   dateFilter(obj, field, filter) {
-    const date = obj[field];
+    let date = obj[field];
     const dateField = obj[field];
     if (date === "") {
       return null;
