@@ -607,7 +607,7 @@ const FilterSettings = {
 
 const Biflow = {
   URL: "https://biflow.dharound.world",
-  RDFEndpoint: "http://biflow.dharound.world/rdf",
+  RDFEndpoint: "https://biflow.dharound.world/rdf",
   path: "/api",
 
   itemsPerPage: 10,
