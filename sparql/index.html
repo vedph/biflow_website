@@ -28,7 +28,7 @@ async function run() {
   const log = document.getElementById("status");
   log.textContent = "Loading resource...";
 
-  const r = await fetch("https://mizar.unive.it/catalogo_biflow/rdf/sparql.php")
+  const r = await fetch("https://biflow.dharound.world/rdf/sparql.php")
   log.textContent = "Parsing resource...";
   const data = await r.json();
 

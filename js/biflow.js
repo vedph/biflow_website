@@ -606,9 +606,9 @@ const FilterSettings = {
 };
 
 const Biflow = {
-  URL: "https://mizar.unive.it",
-  RDFEndpoint: "http://mizar.unive.it/catalogo_biflow/rdf",
-  path: "/catalogo_biflow/api/public/api",
+  URL: "https://biflow.dharound.world",
+  RDFEndpoint: "http://biflow.dharound.world/rdf",
+  path: "/api",
 
   itemsPerPage: 10,
 
@@ -1052,7 +1052,7 @@ const Biflow = {
     });
     dots.push("}");
 
-    const url = new URL("https://mizar.unive.it/catalogo_biflow/graphviz/");
+    const url = new URL("https://biflow.dharound.world/graphviz/");
     url.searchParams.set("dot", btoa(dots.join("")));
 
     const svg = await fetch(url).then(r => r.text());
