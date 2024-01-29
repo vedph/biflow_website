@@ -19,21 +19,8 @@ Biflow.getDataWithFullPath = async (path) => {
 
 async function start() {
   await Promise.all([
-      "bibliographies",
-      "check_statuses",
-      "editors",
-      "expressions",
-      "genres",
-      "languages",
-      "libraries",
-      "localisations",
       "manuscripts",
-      "materials",
-      "nicknames",
       "people",
-      "ruled_line_techniques",
-      "textual_typologies",
-      "typologies",
       "works",
     ].map(item =>
       Biflow.getData(`/${item}`).
