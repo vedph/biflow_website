@@ -1,6 +1,6 @@
 title: Il Catalogo BIFLOW - Toscana bilingue
 baseurl: ""
-preloadurl: "https://catalogobiflow.vedph.it/js/preload_NOTFOUND.js"
+preloadurl: "https://catalogobiflow.vedph.it/js/preload.js"
 url: "http://catalogobiflow.vedph.it"
 emails: [antonio.montefusco@unive.it, sara.bischetti@unive.it, tiziana.mancinelli@unive.it]
 
