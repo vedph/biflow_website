@@ -606,8 +606,8 @@ const FilterSettings = {
 };
 
 const Biflow = {
-  URL: "https://biflow.dharound.world",
-  RDFEndpoint: "https://biflow.dharound.world/rdf",
+  URL: "https://biflow.humanitiesdata.dev",
+  RDFEndpoint: "https://biflow.humanitiesdata.dev/rdf",
   path: "/api",
 
   itemsPerPage: 10,
@@ -1052,7 +1052,7 @@ const Biflow = {
     });
     dots.push("}");
 
-    const url = new URL("https://biflow.dharound.world/graphviz/");
+    const url = new URL("https://biflow.humanitiesdata.dev/graphviz/");
     url.searchParams.set("dot", btoa(dots.join("")));
 
     const svg = await fetch(url).then(r => r.text());
