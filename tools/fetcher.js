@@ -1,5 +1,4 @@
 const { Biflow } = require("../js/biflow.js");
-const fetch = require('node-fetch');
 
 const urls = {};
 
