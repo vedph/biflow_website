@@ -648,7 +648,7 @@ const Biflow = {
     }
 
     const headers = new Headers();
-    headers.append("Accept", "application/ld+json");
+    headers.append("Accept", "application/json");
 
     const resp = await fetch(this.URL + path, { headers });
     const json = await resp.json();
